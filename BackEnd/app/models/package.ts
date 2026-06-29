@@ -15,7 +15,7 @@ export default class Package extends BaseModel {
     declare description: string
 
     @column()
-    declare price: number
+    declare price: string
 
     @column.dateTime({ autoCreate: true })
     declare createdAt: DateTime

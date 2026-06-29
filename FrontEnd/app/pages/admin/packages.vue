@@ -1,6 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 
+definePageMeta({
+  middleware: 'auth'
+})
+
+const tokenCookie = useCookie('admin_token')
+
 const { data: apiResponse, refresh } = await useFetch('http://localhost:3333/api/travel-data')
 const packages = computed(() => apiResponse.value?.data?.packages || [])
 
@@ -40,6 +46,9 @@ const handleSavePackage = async () => {
   try {
     await $fetch(url, {
       method: method,
+      headers: {
+        Authorization: `Bearer ${tokenCookie.value}`
+      },
       body: {
         name: form.value.name,
         price: Number(form.value.price),
@@ -51,7 +60,12 @@ const handleSavePackage = async () => {
     cancelEdit()
     refresh()
   } catch (err) {
-    statusMessage.value = 'Gagal memproses data paket.'
+    if (err?.response?.status === 401) {
+      statusMessage.value = 'Sesi habis. Silakan login ulang.'
+      await navigateTo('/admin/login')
+    } else {
+      statusMessage.value = 'Gagal memproses data paket.'
+    }
   } finally {
     isSubmitting.value = false
   }
@@ -60,14 +74,24 @@ const handleSavePackage = async () => {
 const handleDeletePackage = async (id) => {
   if (confirm('Hapus paket perjalanan ini?')) {
     try {
-      await $fetch(`http://localhost:3333/api/packages/${id}`, { method: 'DELETE' })
+      await $fetch(`http://localhost:3333/api/packages/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${tokenCookie.value}`
+        }
+      })
       refresh()
     } catch (err) {
-      alert('Gagal menghapus data.')
+      if (err?.response?.status === 401) {
+        await navigateTo('/admin/login')
+      } else {
+        alert('Gagal menghapus data.')
+      }
     }
   }
 }
 </script>
+
 
 <template>
   <div class="flex bg-gray-50 min-h-screen text-gray-900 font-sans">

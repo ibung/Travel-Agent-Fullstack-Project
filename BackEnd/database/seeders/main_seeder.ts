@@ -2,9 +2,20 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import Package from '#models/package'
 import Banner from '#models/banner'
 import Review from '#models/review'
+import User from '#models/user'
 
 export default class extends BaseSeeder {
   async run() {
+    // 0. Data Admin User
+    const adminExists = await User.findBy('email', 'admin@travel.com')
+    if (!adminExists) {
+      await User.create({
+        fullName: 'Admin Travel KONG',
+        email: 'admin@travel.com',
+        password: 'password123',
+      })
+    }
+
     // 1. Data Dummy Packages
     await Package.createMany([
       {

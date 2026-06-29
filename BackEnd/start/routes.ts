@@ -41,18 +41,24 @@ router
   })
   .prefix('/api/v1')
 
-// Endpoint API untuk FrontEnd Nuxt
+// Endpoint API untuk FrontEnd Nuxt (public)
 router.get('/api/travel-data', [controllers.TravelApis, 'index'])
 
-// Endpoint manajemen paket (Full CRUD)
-router.post('/api/packages', [TravelApisController, 'store'])
-router.put('/api/packages/:id', [TravelApisController, 'update'])
-router.delete('/api/packages/:id', [TravelApisController, 'destroy'])
+// Endpoint manajemen - dilindungi middleware auth (hanya admin terautentikasi)
+router
+  .group(() => {
+    // Manajemen paket (Full CRUD)
+    router.post('/packages', [TravelApisController, 'store'])
+    router.put('/packages/:id', [TravelApisController, 'update'])
+    router.delete('/packages/:id', [TravelApisController, 'destroy'])
 
-// Endpoint manajemen banner (Full CRUD)
-router.post('/api/banners', [TravelApisController, 'storeBanner'])
-router.put('/api/banners/:id', [TravelApisController, 'updateBanner'])
-router.delete('/api/banners/:id', [TravelApisController, 'destroyBanner'])
+    // Manajemen banner (Full CRUD)
+    router.post('/banners', [TravelApisController, 'storeBanner'])
+    router.put('/banners/:id', [TravelApisController, 'updateBanner'])
+    router.delete('/banners/:id', [TravelApisController, 'destroyBanner'])
 
-// Endpoint manajemen review (Hanya Read dan Delete)
-router.delete('/api/reviews/:id', [TravelApisController, 'destroyReview'])
+    // Manajemen review (Hanya Delete)
+    router.delete('/reviews/:id', [TravelApisController, 'destroyReview'])
+  })
+  .prefix('/api')
+  .use(middleware.auth())

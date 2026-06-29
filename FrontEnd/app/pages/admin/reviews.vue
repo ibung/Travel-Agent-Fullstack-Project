@@ -1,20 +1,36 @@
 <script setup>
 import { computed } from 'vue'
 
+definePageMeta({
+  middleware: 'auth'
+})
+
+const tokenCookie = useCookie('admin_token')
+
 const { data: apiResponse, refresh } = await useFetch('http://localhost:3333/api/travel-data')
 const reviews = computed(() => apiResponse.value?.data?.reviews || [])
 
 const handleDeleteReview = async (id) => {
   if (confirm('Hapus review dari pelanggan ini?')) {
     try {
-      await $fetch(`http://localhost:3333/api/reviews/${id}`, { method: 'DELETE' })
+      await $fetch(`http://localhost:3333/api/reviews/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${tokenCookie.value}`
+        }
+      })
       refresh()
     } catch (err) {
-      alert('Gagal menghapus ulasan.')
+      if (err?.response?.status === 401) {
+        await navigateTo('/admin/login')
+      } else {
+        alert('Gagal menghapus ulasan.')
+      }
     }
   }
 }
 </script>
+
 
 <template>
   <div class="flex bg-gray-50 min-h-screen text-gray-900 font-sans">

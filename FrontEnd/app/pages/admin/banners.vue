@@ -1,6 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 
+definePageMeta({
+  middleware: 'auth'
+})
+
+const tokenCookie = useCookie('admin_token')
+
 const { data: apiResponse, refresh } = await useFetch('http://localhost:3333/api/travel-data')
 const banners = computed(() => apiResponse.value?.data?.banners || [])
 
@@ -35,13 +41,21 @@ const handleSaveBanner = async () => {
   try {
     await $fetch(url, {
       method: method,
+      headers: {
+        Authorization: `Bearer ${tokenCookie.value}`
+      },
       body: form.value
     })
     statusMessage.value = isEditing.value ? 'Banner promosi berhasil diperbarui.' : 'Banner promosi berhasil ditambahkan.'
     cancelEdit()
     refresh()
   } catch (err) {
-    statusMessage.value = 'Gagal memproses data banner.'
+    if (err?.response?.status === 401) {
+      statusMessage.value = 'Sesi habis. Silakan login ulang.'
+      await navigateTo('/admin/login')
+    } else {
+      statusMessage.value = 'Gagal memproses data banner.'
+    }
   } finally {
     isSubmitting.value = false
   }
@@ -50,14 +64,24 @@ const handleSaveBanner = async () => {
 const handleDeleteBanner = async (id) => {
   if (confirm('Hapus banner promo ini?')) {
     try {
-      await $fetch(`http://localhost:3333/api/banners/${id}`, { method: 'DELETE' })
+      await $fetch(`http://localhost:3333/api/banners/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${tokenCookie.value}`
+        }
+      })
       refresh()
     } catch (err) {
-      alert('Gagal menghapus data.')
+      if (err?.response?.status === 401) {
+        await navigateTo('/admin/login')
+      } else {
+        alert('Gagal menghapus data.')
+      }
     }
   }
 }
 </script>
+
 
 <template>
   <div class="flex bg-gray-50 min-h-screen text-gray-900 font-sans">

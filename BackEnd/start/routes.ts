@@ -9,6 +9,7 @@
 
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
+import TravelApisController from '../app/controllers/travel_apis_controller.js'
 import { controllers } from '#generated/controllers'
 
 router.get('/', () => {
@@ -42,3 +43,16 @@ router
 
 // Endpoint API untuk FrontEnd Nuxt
 router.get('/api/travel-data', [controllers.TravelApis, 'index'])
+
+// Endpoint manajemen paket (Full CRUD)
+router.post('/api/packages', [TravelApisController, 'store'])
+router.put('/api/packages/:id', [TravelApisController, 'update'])
+router.delete('/api/packages/:id', [TravelApisController, 'destroy'])
+
+// Endpoint manajemen banner (Full CRUD)
+router.post('/api/banners', [TravelApisController, 'storeBanner'])
+router.put('/api/banners/:id', [TravelApisController, 'updateBanner'])
+router.delete('/api/banners/:id', [TravelApisController, 'destroyBanner'])
+
+// Endpoint manajemen review (Hanya Read dan Delete)
+router.delete('/api/reviews/:id', [TravelApisController, 'destroyReview'])

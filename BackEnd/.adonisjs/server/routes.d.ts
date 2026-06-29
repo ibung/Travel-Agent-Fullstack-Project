@@ -12,6 +12,13 @@ export type ScannedRoutes = {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
     'travel_apis.index': { paramsTuple?: []; params?: {} }
+    'travel_apis.store': { paramsTuple?: []; params?: {} }
+    'travel_apis.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'travel_apis.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'travel_apis.store_banner': { paramsTuple?: []; params?: {} }
+    'travel_apis.update_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'travel_apis.destroy_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'travel_apis.destroy_review': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'travel_apis.banners': { paramsTuple?: []; params?: {} }
@@ -31,6 +38,17 @@ export type ScannedRoutes = {
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
     'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
+    'travel_apis.store': { paramsTuple?: []; params?: {} }
+    'travel_apis.store_banner': { paramsTuple?: []; params?: {} }
+  }
+  PUT: {
+    'travel_apis.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'travel_apis.update_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  DELETE: {
+    'travel_apis.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'travel_apis.destroy_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'travel_apis.destroy_review': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

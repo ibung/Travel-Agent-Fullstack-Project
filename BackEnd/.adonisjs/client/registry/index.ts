@@ -54,6 +54,48 @@ const routes = {
     tokens: [{"old":"/api/travel-data","type":0,"val":"api","end":""},{"old":"/api/travel-data","type":0,"val":"travel-data","end":""}],
     types: placeholder as Registry['travel_apis.index']['types'],
   },
+  'travel_apis.store': {
+    methods: ["POST"],
+    pattern: '/api/packages',
+    tokens: [{"old":"/api/packages","type":0,"val":"api","end":""},{"old":"/api/packages","type":0,"val":"packages","end":""}],
+    types: placeholder as Registry['travel_apis.store']['types'],
+  },
+  'travel_apis.update': {
+    methods: ["PUT"],
+    pattern: '/api/packages/:id',
+    tokens: [{"old":"/api/packages/:id","type":0,"val":"api","end":""},{"old":"/api/packages/:id","type":0,"val":"packages","end":""},{"old":"/api/packages/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['travel_apis.update']['types'],
+  },
+  'travel_apis.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/packages/:id',
+    tokens: [{"old":"/api/packages/:id","type":0,"val":"api","end":""},{"old":"/api/packages/:id","type":0,"val":"packages","end":""},{"old":"/api/packages/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['travel_apis.destroy']['types'],
+  },
+  'travel_apis.store_banner': {
+    methods: ["POST"],
+    pattern: '/api/banners',
+    tokens: [{"old":"/api/banners","type":0,"val":"api","end":""},{"old":"/api/banners","type":0,"val":"banners","end":""}],
+    types: placeholder as Registry['travel_apis.store_banner']['types'],
+  },
+  'travel_apis.update_banner': {
+    methods: ["PUT"],
+    pattern: '/api/banners/:id',
+    tokens: [{"old":"/api/banners/:id","type":0,"val":"api","end":""},{"old":"/api/banners/:id","type":0,"val":"banners","end":""},{"old":"/api/banners/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['travel_apis.update_banner']['types'],
+  },
+  'travel_apis.destroy_banner': {
+    methods: ["DELETE"],
+    pattern: '/api/banners/:id',
+    tokens: [{"old":"/api/banners/:id","type":0,"val":"api","end":""},{"old":"/api/banners/:id","type":0,"val":"banners","end":""},{"old":"/api/banners/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['travel_apis.destroy_banner']['types'],
+  },
+  'travel_apis.destroy_review': {
+    methods: ["DELETE"],
+    pattern: '/api/reviews/:id',
+    tokens: [{"old":"/api/reviews/:id","type":0,"val":"api","end":""},{"old":"/api/reviews/:id","type":0,"val":"reviews","end":""},{"old":"/api/reviews/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['travel_apis.destroy_review']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

@@ -103,4 +103,88 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['index']>>>
     }
   }
+  'travel_apis.store': {
+    methods: ["POST"]
+    pattern: '/api/packages'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'travel_apis.update': {
+    methods: ["PUT"]
+    pattern: '/api/packages/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'travel_apis.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/packages/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'travel_apis.store_banner': {
+    methods: ["POST"]
+    pattern: '/api/banners'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'travel_apis.update_banner': {
+    methods: ["PUT"]
+    pattern: '/api/banners/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'travel_apis.destroy_banner': {
+    methods: ["DELETE"]
+    pattern: '/api/banners/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'travel_apis.destroy_review': {
+    methods: ["DELETE"]
+    pattern: '/api/reviews/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }

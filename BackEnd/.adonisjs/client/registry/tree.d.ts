@@ -7,6 +7,13 @@ export interface ApiDefinition {
     packages: typeof routes['travel_apis.packages']
     reviews: typeof routes['travel_apis.reviews']
     index: typeof routes['travel_apis.index']
+    store: typeof routes['travel_apis.store']
+    update: typeof routes['travel_apis.update']
+    destroy: typeof routes['travel_apis.destroy']
+    storeBanner: typeof routes['travel_apis.store_banner']
+    updateBanner: typeof routes['travel_apis.update_banner']
+    destroyBanner: typeof routes['travel_apis.destroy_banner']
+    destroyReview: typeof routes['travel_apis.destroy_review']
   }
   auth: {
     newAccount: {

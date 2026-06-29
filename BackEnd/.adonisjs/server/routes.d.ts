@@ -12,6 +12,7 @@ export type ScannedRoutes = {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
     'travel_apis.index': { paramsTuple?: []; params?: {} }
+    'travel_apis.store_review': { paramsTuple?: []; params?: {} }
     'travel_apis.store': { paramsTuple?: []; params?: {} }
     'travel_apis.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -38,6 +39,7 @@ export type ScannedRoutes = {
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
     'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
+    'travel_apis.store_review': { paramsTuple?: []; params?: {} }
     'travel_apis.store': { paramsTuple?: []; params?: {} }
     'travel_apis.store_banner': { paramsTuple?: []; params?: {} }
   }

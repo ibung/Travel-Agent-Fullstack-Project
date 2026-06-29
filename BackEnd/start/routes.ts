@@ -43,6 +43,7 @@ router
 
 // Endpoint API untuk FrontEnd Nuxt (public)
 router.get('/api/travel-data', [controllers.TravelApis, 'index'])
+router.post('/api/reviews', [TravelApisController, 'storeReview'])
 
 // Endpoint manajemen - dilindungi middleware auth (hanya admin terautentikasi)
 router

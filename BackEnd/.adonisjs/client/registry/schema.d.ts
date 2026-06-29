@@ -103,6 +103,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['index']>>>
     }
   }
+  'travel_apis.store_review': {
+    methods: ["POST"]
+    pattern: '/api/reviews'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'travel_apis.store': {
     methods: ["POST"]
     pattern: '/api/packages'

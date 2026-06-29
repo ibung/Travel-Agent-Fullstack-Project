@@ -54,6 +54,12 @@ const routes = {
     tokens: [{"old":"/api/travel-data","type":0,"val":"api","end":""},{"old":"/api/travel-data","type":0,"val":"travel-data","end":""}],
     types: placeholder as Registry['travel_apis.index']['types'],
   },
+  'travel_apis.store_review': {
+    methods: ["POST"],
+    pattern: '/api/reviews',
+    tokens: [{"old":"/api/reviews","type":0,"val":"api","end":""},{"old":"/api/reviews","type":0,"val":"reviews","end":""}],
+    types: placeholder as Registry['travel_apis.store_review']['types'],
+  },
   'travel_apis.store': {
     methods: ["POST"],
     pattern: '/api/packages',

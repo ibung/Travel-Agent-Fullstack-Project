@@ -13,7 +13,7 @@ export class AuthAccessTokenSchema extends BaseModel {
   @column()
   declare abilities: string
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime | null
+  declare createdAt: DateTime
   @column.dateTime()
   declare expiresAt: DateTime | null
   @column()
@@ -29,7 +29,58 @@ export class AuthAccessTokenSchema extends BaseModel {
   @column()
   declare type: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
+  declare updatedAt: DateTime
+}
+
+export class BannerSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'image', 'title', 'updatedAt'] as const
+  $columns = BannerSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare image: string
+  @column()
+  declare title: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+}
+
+export class PackageSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'id', 'image', 'name', 'price', 'updatedAt'] as const
+  $columns = PackageSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare description: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare image: string
+  @column()
+  declare name: string
+  @column()
+  declare price: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+}
+
+export class ReviewSchema extends BaseModel {
+  static $columns = ['createdAt', 'customerName', 'id', 'rating', 'reviewText', 'updatedAt'] as const
+  $columns = ReviewSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare customerName: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare rating: number | null
+  @column()
+  declare reviewText: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
 }
 
 export class UserSchema extends BaseModel {
@@ -46,5 +97,5 @@ export class UserSchema extends BaseModel {
   @column({ serializeAs: null })
   declare password: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
+  declare updatedAt: DateTime
 }

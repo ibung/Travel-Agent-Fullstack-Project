@@ -7,6 +7,42 @@ import type { InferInput, SimpleError } from '@vinejs/vine/types'
 export type ParamValue = string | number | bigint | boolean
 
 export interface Registry {
+  'travel_apis.banners': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/banners'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['banners']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['banners']>>>
+    }
+  }
+  'travel_apis.packages': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/packages'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['packages']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['packages']>>>
+    }
+  }
+  'travel_apis.reviews': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/reviews'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['reviews']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['reviews']>>>
+    }
+  }
   'auth.new_account.store': {
     methods: ["POST"]
     pattern: '/api/v1/auth/signup'
@@ -53,6 +89,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['destroy']>>>
+    }
+  }
+  'travel_apis.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/travel-data'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/travel_apis_controller').default['index']>>>
     }
   }
 }

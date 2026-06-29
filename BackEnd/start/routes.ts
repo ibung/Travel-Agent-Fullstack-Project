@@ -17,6 +17,10 @@ router.get('/', () => {
 
 router
   .group(() => {
+    router.get('banners', [controllers.TravelApis, 'banners'])
+    router.get('packages', [controllers.TravelApis, 'packages'])
+    router.get('reviews', [controllers.TravelApis, 'reviews'])
+
     router
       .group(() => {
         router.post('signup', [controllers.NewAccount, 'store'])
@@ -35,3 +39,6 @@ router
       .use(middleware.auth())
   })
   .prefix('/api/v1')
+
+// Endpoint API untuk FrontEnd Nuxt
+router.get('/api/travel-data', [controllers.TravelApis, 'index'])

@@ -2,6 +2,12 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
+  travelApis: {
+    banners: typeof routes['travel_apis.banners']
+    packages: typeof routes['travel_apis.packages']
+    reviews: typeof routes['travel_apis.reviews']
+    index: typeof routes['travel_apis.index']
+  }
   auth: {
     newAccount: {
       store: typeof routes['auth.new_account.store']

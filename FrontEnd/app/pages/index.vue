@@ -55,11 +55,11 @@ const handleSendReview = async () => {
       <div class="container mx-auto flex justify-between items-center px-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-heroicons-paper-airplane" class="w-6 h-6 text-blue-600 rotate-45" />
-          <h1 class="text-xl font-bold text-blue-600">KONG Travel Agent</h1>
+          <h1 class="text-xl font-bold text-blue-600 font-sans">KONG Travel</h1>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span class="text-[11px] text-gray-500 font-medium">Customer Mode</span>
+        <div class="flex items-center gap-4">
+          <NuxtLink to="#packages" class="text-xs text-gray-600 hover:text-blue-600 font-semibold transition-colors">Paket Wisata</NuxtLink>
+          <NuxtLink to="#reviews" class="text-xs text-gray-600 hover:text-blue-600 font-semibold transition-colors">Ulasan</NuxtLink>
         </div>
       </div>
     </header>
@@ -91,7 +91,7 @@ const handleSendReview = async () => {
           </div>
         </section>
 
-        <section>
+        <section id="packages">
           <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <UIcon name="i-heroicons-globe-asia-australia" class="text-blue-600 w-5 h-5" />
             Paket Wisata Terpopuler
@@ -114,7 +114,7 @@ const handleSendReview = async () => {
           </div>
         </section>
 
-        <section>
+        <section id="reviews">
           <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <UIcon name="i-heroicons-chat-bubble-left-right" class="text-blue-600 w-5 h-5" />
             Ulasan Juara dari Traveler
@@ -210,5 +210,47 @@ const handleSendReview = async () => {
         </section>
       </div>
     </div>
+
+    <!-- Footer Seksi Kontak Baru -->
+    <footer class="bg-white border-t border-gray-200 mt-20 py-12 text-xs text-gray-500">
+      <div class="container mx-auto px-4 max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <UIcon name="i-heroicons-paper-airplane" class="w-5 h-5 text-blue-600 rotate-45" />
+            <h4 class="font-bold text-gray-800 text-sm">KONG Travel Agent</h4>
+          </div>
+          <p class="leading-relaxed">Solusi lengkap perjalanan wisata nusantara tepercaya. Temukan penawaran terbaik dan destinasi impian Anda bersama kami.</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-800 text-sm mb-4">Menu Pintar</h4>
+          <ul class="space-y-2.5">
+            <li><NuxtLink to="#packages" class="hover:text-blue-600 transition-colors">Daftar Paket Destinasi</NuxtLink></li>
+            <li><NuxtLink to="#reviews" class="hover:text-blue-600 transition-colors">Ulasan Pelanggan</NuxtLink></li>
+            <li><NuxtLink to="/admin" class="hover:text-blue-600 transition-colors">Dashboard Admin</NuxtLink></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-800 text-sm mb-4">Hubungi Kami</h4>
+          <ul class="space-y-2.5">
+            <li class="flex items-center gap-2">
+              <UIcon name="i-heroicons-phone" class="text-blue-600 w-4 h-4" />
+              <span>+62 812-3456-7890</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <UIcon name="i-heroicons-envelope" class="text-blue-600 w-4 h-4" />
+              <span>info@kongtravel.com</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <UIcon name="i-heroicons-map-pin" class="text-blue-600 w-4 h-4" />
+              <span>Ubud, Gianyar, Bali, Indonesia</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="container mx-auto px-4 max-w-6xl mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p>&copy; 2026 KONG Travel Agent. All rights reserved.</p>
+      </div>
+    </footer>
+
   </div>
 </template>

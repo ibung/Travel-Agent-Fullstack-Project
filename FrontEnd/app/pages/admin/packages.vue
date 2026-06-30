@@ -17,7 +17,10 @@ const { data: imageList } = await useFetch('http://localhost:3333/api/images', {
 })
 const availableImages = computed(() => imageList.value?.data || [])
 
-const form = ref({ name: '', price: '', description: '', image: availableImages.value[0] || '' })
+const form = ref({ 
+  name: '', price: '', description: '', image: availableImages.value[0] || '',
+  transportType: 'bus', provider: '', origin: 'Bandung', destination: 'Jogja', rating: 4.5
+})
 const isSubmitting = ref(false)
 const isEditing = ref(false)
 const editId = ref(null)
@@ -30,14 +33,22 @@ const startEdit = (pkg) => {
     name: pkg.name,
     price: pkg.price,
     description: pkg.description,
-    image: pkg.image
+    image: pkg.image,
+    transportType: pkg.transportType || pkg.transport_type,
+    provider: pkg.provider,
+    origin: pkg.origin,
+    destination: pkg.destination,
+    rating: pkg.rating
   }
 }
 
 const cancelEdit = () => {
   isEditing.value = false
   editId.value = null
-  form.value = { name: '', price: '', description: '', image: availableImages.value[0] || '' }
+  form.value = { 
+    name: '', price: '', description: '', image: availableImages.value[0] || '',
+    transportType: 'bus', provider: '', origin: 'Bandung', destination: 'Jogja', rating: 4.5
+  }
 }
 
 const handleSavePackage = async () => {
@@ -60,7 +71,12 @@ const handleSavePackage = async () => {
         name: form.value.name,
         price: Number(form.value.price),
         description: form.value.description,
-        image: form.value.image
+        image: form.value.image,
+        transport_type: form.value.transportType,
+        provider: form.value.provider,
+        origin: form.value.origin,
+        destination: form.value.destination,
+        rating: Number(form.value.rating)
       }
     })
     statusMessage.value = isEditing.value ? 'Data paket berhasil diperbarui.' : 'Data paket berhasil disimpan.'
@@ -116,13 +132,44 @@ const handleDeletePackage = async (id) => {
             {{ isEditing ? 'Edit Data Paket' : 'Input Data Paket' }}
           </h3>
           <form @submit.prevent="handleSavePackage" class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Paket Wisata</label>
-              <input v-model="form.name" type="text" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Armada / Destinasi</label>
+                <input v-model="form.name" type="text" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Harga (IDR)</label>
+                <input v-model="form.price" type="number" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+              </div>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-500 mb-1">Harga Paket (IDR)</label>
-              <input v-model="form.price" type="number" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Jenis Transportasi</label>
+                <select v-model="form.transportType" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="bus">Bus</option>
+                  <option value="travel">Travel</option>
+                  <option value="pesawat">Pesawat</option>
+                  <option value="kereta">Kereta</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Provider (Misal: DAMRI)</label>
+                <input v-model="form.provider" type="text" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Asal</label>
+                <input v-model="form.origin" type="text" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Tujuan</label>
+                <input v-model="form.destination" type="text" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">Rating</label>
+                <input v-model="form.rating" type="number" step="0.1" max="5" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+              </div>
             </div>
             <div>
               <label class="block text-xs font-semibold text-gray-500 mb-1">Gambar Banner</label>

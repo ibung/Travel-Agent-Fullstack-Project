@@ -9,6 +9,14 @@ const banners = computed(() => apiResponse.value?.data?.banners || [])
 const packages = computed(() => apiResponse.value?.data?.packages || [])
 const reviews = computed(() => apiResponse.value?.data?.reviews || [])
 
+const selectedTransport = ref('semua')
+const filteredPackages = computed(() => {
+  if (selectedTransport.value === 'semua') {
+    return packages.value
+  }
+  return packages.value.filter(pkg => pkg.transport_type === selectedTransport.value || pkg.transportType === selectedTransport.value)
+})
+
 // Form state untuk review baru
 const newCustomerName = ref('')
 const newReviewText = ref('')
@@ -93,21 +101,51 @@ onMounted(() => {
 onUnmounted(() => {
   if (bannerInterval) clearInterval(bannerInterval)
 })
+
+const filterAndScrollTo = (type) => {
+  selectedTransport.value = type
+  document.getElementById('destinasi')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>
 
 <template>
   <div class="bg-gray-50 min-h-screen font-sans text-gray-900">
     
-    <header class="bg-white shadow-sm p-4 sticky top-0 z-50">
-      <div class="container mx-auto flex justify-between items-center px-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-heroicons-paper-airplane" class="w-6 h-6 text-blue-600 rotate-45" />
-          <h1 class="text-xl font-bold text-blue-600 font-sans">KONG Travel</h1>
-        </div>
-        <div class="flex items-center gap-4">
-          <NuxtLink to="#packages" class="text-xs text-gray-600 hover:text-blue-600 font-semibold transition-colors">Paket Wisata</NuxtLink>
-          <NuxtLink to="#reviews" class="text-xs text-gray-600 hover:text-blue-600 font-semibold transition-colors">Ulasan</NuxtLink>
-        </div>
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 transition-all border-b border-gray-100">
+      <div class="container mx-auto flex justify-between items-center px-4 py-3 md:py-4">
+        <!-- Logo -->
+        <NuxtLink to="/" class="flex items-center gap-3 group">
+          <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-2.5 rounded-2xl shadow-sm group-hover:scale-105 transition-transform flex items-center justify-center">
+            <UIcon name="i-heroicons-paper-airplane" class="w-6 h-6 text-white rotate-45" />
+          </div>
+          <div class="flex flex-col">
+            <h1 class="text-3xl text-[#13238b] tracking-tight leading-none">
+              <span class="font-black">KONG</span>
+              <span class="font-normal"> Travel</span>
+            </h1>
+            <p class="text-[11px] text-gray-600 font-medium tracking-wide mt-1">Your Premium Journey, Reimagined.</p>
+          </div>
+        </NuxtLink>
+
+        <!-- Menu Tengah -->
+        <nav class="hidden md:flex items-center gap-8">
+          <NuxtLink to="#destinasi" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
+            Destinasi
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+          </NuxtLink>
+          <NuxtLink to="#layanan" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
+            Layanan
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+          </NuxtLink>
+          <NuxtLink to="#testimoni" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
+            Testimoni
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+          </NuxtLink>
+          <NuxtLink to="#kontak" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
+            Kontak
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+          </NuxtLink>
+        </nav>
       </div>
     </header>
 
@@ -169,30 +207,130 @@ onUnmounted(() => {
 
       <div v-else class="space-y-16">
         
-        <section id="packages">
-          <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <UIcon name="i-heroicons-globe-asia-australia" class="text-blue-600 w-5 h-5" />
-            Paket Wisata Terpopuler
-          </h2>
+        <section id="destinasi">
+          <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <UIcon name="i-heroicons-globe-asia-australia" class="text-blue-600 w-5 h-5" />
+              Rute Perjalanan & Destinasi
+            </h2>
+            
+            <!-- Segment / Bubble Filters -->
+            <div class="flex flex-wrap gap-2 justify-center md:justify-end">
+              <button 
+                v-for="type in ['semua', 'bus', 'travel', 'pesawat', 'kereta']" 
+                :key="type"
+                @click="selectedTransport = type"
+                class="px-4 py-1.5 rounded-full text-xs font-bold capitalize transition-all border shadow-sm"
+                :class="selectedTransport === type ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
+              >
+                {{ type }}
+              </button>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div v-for="pkg in packages" :key="pkg.id" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-              <img :src="`/${pkg.image}`" class="w-full h-48 object-cover" alt="Destinasi">
+            <div v-for="pkg in filteredPackages" :key="pkg.id" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer group">
+              <div class="relative h-48 w-full overflow-hidden">
+                <img :src="`/${pkg.image}`" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Destinasi">
+                <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-bold text-gray-800 flex items-center gap-1 shadow-sm">
+                  <UIcon name="i-heroicons-star-16-solid" class="text-yellow-400 w-4 h-4" />
+                  {{ pkg.rating }}
+                </div>
+                <div class="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                  {{ pkg.transportType || pkg.transport_type }}
+                </div>
+              </div>
               <div class="p-5 flex flex-col flex-grow">
-                <h3 class="font-bold text-base text-gray-900 mb-2 line-clamp-1">{{ pkg.name }}</h3>
-                <p class="text-gray-500 text-xs leading-relaxed mb-5 line-clamp-2">{{ pkg.description }}</p>
+                <div class="flex items-center gap-2 mb-3">
+                  <div class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">
+                    {{ pkg.origin }}
+                  </div>
+                  <UIcon name="i-heroicons-arrow-right-16-solid" class="text-gray-400 w-4 h-4" />
+                  <div class="bg-green-50 text-green-700 px-2 py-0.5 rounded text-xs font-bold">
+                    {{ pkg.destination }}
+                  </div>
+                </div>
+                
+                <h3 class="font-bold text-base text-gray-900 mb-1 line-clamp-1 flex items-center gap-1">
+                  {{ pkg.provider }}
+                </h3>
+                <p class="text-gray-500 text-xs leading-relaxed mb-5 line-clamp-2">{{ pkg.name }} - {{ pkg.description }}</p>
+                
                 <div class="flex justify-between items-center mt-auto pt-3 border-t">
                   <div>
-                    <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Mulai dari</p>
+                    <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Estimasi Biaya</p>
                     <p class="text-blue-600 font-extrabold text-sm">Rp {{ Number(pkg.price).toLocaleString('id-ID') }}</p>
                   </div>
-                  <button class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold">Booking</button>
+                  <span class="text-xs text-blue-600 font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    Jelajahi <UIcon name="i-heroicons-arrow-right" class="w-3 h-3" />
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="reviews">
+        <section id="layanan">
+          <div class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2 mb-2">
+              <UIcon name="i-heroicons-sparkles" class="text-blue-600 w-5 h-5" />
+              Layanan KONG Travel
+            </h2>
+            <p class="text-sm text-gray-500 max-w-2xl">Kami menyediakan berbagai layanan transportasi untuk menunjang perjalanan Anda, mulai dari perorangan hingga rombongan dengan pelayanan yang aman dan nyaman.</p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1 (Travel) -->
+            <div @click="filterAndScrollTo('travel')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
+              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
+                <UIcon name="i-heroicons-truck" class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 class="font-bold text-gray-800 mb-2">Travel Antar Kota</h3>
+              <p class="text-xs text-gray-500 leading-relaxed mb-4 flex-grow">Layanan travel reguler dan point-to-point untuk perjalanan antar kota yang cepat dan nyaman.</p>
+              <button class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                PILIH TRAVEL <UIcon name="i-heroicons-arrow-right" class="w-3 h-3" />
+              </button>
+            </div>
+            
+            <!-- Card 2 (Bus) -->
+            <div @click="filterAndScrollTo('bus')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
+              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
+                <UIcon name="i-heroicons-user-group" class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 class="font-bold text-gray-800 mb-2">Bus Pariwisata</h3>
+              <p class="text-xs text-gray-500 leading-relaxed mb-4 flex-grow">Sewa armada bus pariwisata untuk liburan rombongan, study tour, atau gathering perusahaan.</p>
+              <button class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                PILIH BUS <UIcon name="i-heroicons-arrow-right" class="w-3 h-3" />
+              </button>
+            </div>
+            
+            <!-- Card 3 (Pesawat) -->
+            <div @click="filterAndScrollTo('pesawat')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
+              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
+                <UIcon name="i-heroicons-paper-airplane" class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 class="font-bold text-gray-800 mb-2">Tiket Pesawat</h3>
+              <p class="text-xs text-gray-500 leading-relaxed mb-4 flex-grow">Pemesanan tiket pesawat rute domestik dan internasional dengan penawaran harga terbaik.</p>
+              <button class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                PILIH PESAWAT <UIcon name="i-heroicons-arrow-right" class="w-3 h-3" />
+              </button>
+            </div>
+            
+            <!-- Card 4 (Kereta) -->
+            <div @click="filterAndScrollTo('kereta')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
+              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
+                <UIcon name="i-heroicons-ticket" class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 class="font-bold text-gray-800 mb-2">Kereta Api</h3>
+              <p class="text-xs text-gray-500 leading-relaxed mb-4 flex-grow">Reservasi tiket kereta api anti ribet untuk perjalanan bebas macet melintasi pulau Jawa & Sumatera.</p>
+              <button class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                PILIH KERETA <UIcon name="i-heroicons-arrow-right" class="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section id="testimoni">
           <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <UIcon name="i-heroicons-chat-bubble-left-right" class="text-blue-600 w-5 h-5" />
             Ulasan Juara dari Traveler
@@ -290,42 +428,42 @@ onUnmounted(() => {
     </div>
 
     <!-- Footer Seksi Kontak Baru -->
-    <footer class="bg-white border-t border-gray-200 mt-20 py-12 text-xs text-gray-500">
+    <footer id="kontak" class="bg-blue-600 border-t border-blue-700 mt-20 py-12 text-xs text-blue-100">
       <div class="container mx-auto px-4 max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <div class="flex items-center gap-2 mb-4">
-            <UIcon name="i-heroicons-paper-airplane" class="w-5 h-5 text-blue-600 rotate-45" />
-            <h4 class="font-bold text-gray-800 text-sm">KONG Travel Agent</h4>
+            <UIcon name="i-heroicons-paper-airplane" class="w-5 h-5 text-blue-200 rotate-45" />
+            <h4 class="font-bold text-white text-sm">KONG Travel Agent</h4>
           </div>
           <p class="leading-relaxed">Solusi lengkap perjalanan wisata nusantara tepercaya. Temukan penawaran terbaik dan destinasi impian Anda bersama kami.</p>
         </div>
         <div>
-          <h4 class="font-bold text-gray-800 text-sm mb-4">Menu Pintar</h4>
+          <h4 class="font-bold text-white text-sm mb-4">Menu Pintar</h4>
           <ul class="space-y-2.5">
-            <li><NuxtLink to="#packages" class="hover:text-blue-600 transition-colors">Daftar Paket Destinasi</NuxtLink></li>
-            <li><NuxtLink to="#reviews" class="hover:text-blue-600 transition-colors">Ulasan Pelanggan</NuxtLink></li>
-            <li><NuxtLink to="/admin" class="hover:text-blue-600 transition-colors">Dashboard Admin</NuxtLink></li>
+            <li><NuxtLink to="#destinasi" class="hover:text-white transition-colors">Daftar Paket Destinasi</NuxtLink></li>
+            <li><NuxtLink to="#testimoni" class="hover:text-white transition-colors">Ulasan Pelanggan</NuxtLink></li>
+            <li><NuxtLink to="/admin" class="hover:text-white transition-colors">Dashboard Admin</NuxtLink></li>
           </ul>
         </div>
         <div>
-          <h4 class="font-bold text-gray-800 text-sm mb-4">Hubungi Kami</h4>
+          <h4 class="font-bold text-white text-sm mb-4">Hubungi Kami</h4>
           <ul class="space-y-2.5">
             <li class="flex items-center gap-2">
-              <UIcon name="i-heroicons-phone" class="text-blue-600 w-4 h-4" />
+              <UIcon name="i-heroicons-phone" class="text-blue-200 w-4 h-4" />
               <span>+62 812-3456-7890</span>
             </li>
             <li class="flex items-center gap-2">
-              <UIcon name="i-heroicons-envelope" class="text-blue-600 w-4 h-4" />
+              <UIcon name="i-heroicons-envelope" class="text-blue-200 w-4 h-4" />
               <span>info@kongtravel.com</span>
             </li>
             <li class="flex items-center gap-2">
-              <UIcon name="i-heroicons-map-pin" class="text-blue-600 w-4 h-4" />
+              <UIcon name="i-heroicons-map-pin" class="text-blue-200 w-4 h-4" />
               <span>Ubud, Gianyar, Bali, Indonesia</span>
             </li>
           </ul>
         </div>
       </div>
-      <div class="container mx-auto px-4 max-w-6xl mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="container mx-auto px-4 max-w-6xl mt-8 pt-6 border-t border-blue-500/30 flex flex-col sm:flex-row justify-between items-center gap-4 text-blue-200">
         <p>&copy; 2026 KONG Travel Agent. All rights reserved.</p>
       </div>
     </footer>

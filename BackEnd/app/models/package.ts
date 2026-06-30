@@ -17,6 +17,21 @@ export default class Package extends BaseModel {
     @column()
     declare price: string
 
+    @column()
+    declare transportType: string
+
+    @column()
+    declare provider: string
+
+    @column()
+    declare origin: string
+
+    @column()
+    declare destination: string
+
+    @column()
+    declare rating: number
+
     @column.dateTime({ autoCreate: true })
     declare createdAt: DateTime
 

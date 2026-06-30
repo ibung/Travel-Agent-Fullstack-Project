@@ -48,12 +48,14 @@ export class BannerSchema extends BaseModel {
 }
 
 export class PackageSchema extends BaseModel {
-  static $columns = ['createdAt', 'description', 'id', 'image', 'name', 'price', 'updatedAt'] as const
+  static $columns = ['createdAt', 'description', 'destination', 'id', 'image', 'name', 'origin', 'price', 'provider', 'rating', 'transportType', 'updatedAt'] as const
   $columns = PackageSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
   declare description: string
+  @column()
+  declare destination: string
   @column({ isPrimary: true })
   declare id: number
   @column()
@@ -61,7 +63,15 @@ export class PackageSchema extends BaseModel {
   @column()
   declare name: string
   @column()
+  declare origin: string
+  @column()
   declare price: string
+  @column()
+  declare provider: string
+  @column()
+  declare rating: string
+  @column()
+  declare transportType: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 }

@@ -60,6 +60,9 @@ router
 
     // Manajemen review (Hanya Delete)
     router.delete('/reviews/:id', [TravelApisController, 'destroyReview'])
+
+    // Mendapatkan daftar gambar di folder public FrontEnd
+    router.get('/images', [TravelApisController, 'getPublicImages'])
   })
   .prefix('/api')
   .use(middleware.auth())

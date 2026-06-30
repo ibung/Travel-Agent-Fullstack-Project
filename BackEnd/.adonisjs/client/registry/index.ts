@@ -102,6 +102,12 @@ const routes = {
     tokens: [{"old":"/api/reviews/:id","type":0,"val":"api","end":""},{"old":"/api/reviews/:id","type":0,"val":"reviews","end":""},{"old":"/api/reviews/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['travel_apis.destroy_review']['types'],
   },
+  'travel_apis.get_public_images': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/images',
+    tokens: [{"old":"/api/images","type":0,"val":"api","end":""},{"old":"/api/images","type":0,"val":"images","end":""}],
+    types: placeholder as Registry['travel_apis.get_public_images']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

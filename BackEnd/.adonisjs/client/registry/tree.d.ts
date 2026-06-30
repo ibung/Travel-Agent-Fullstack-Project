@@ -15,6 +15,7 @@ export interface ApiDefinition {
     updateBanner: typeof routes['travel_apis.update_banner']
     destroyBanner: typeof routes['travel_apis.destroy_banner']
     destroyReview: typeof routes['travel_apis.destroy_review']
+    getPublicImages: typeof routes['travel_apis.get_public_images']
   }
   auth: {
     newAccount: {

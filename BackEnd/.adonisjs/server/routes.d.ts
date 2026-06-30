@@ -20,6 +20,7 @@ export type ScannedRoutes = {
     'travel_apis.update_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.destroy_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.destroy_review': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'travel_apis.get_public_images': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'travel_apis.banners': { paramsTuple?: []; params?: {} }
@@ -27,6 +28,7 @@ export type ScannedRoutes = {
     'travel_apis.reviews': { paramsTuple?: []; params?: {} }
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'travel_apis.index': { paramsTuple?: []; params?: {} }
+    'travel_apis.get_public_images': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'travel_apis.banners': { paramsTuple?: []; params?: {} }
@@ -34,6 +36,7 @@ export type ScannedRoutes = {
     'travel_apis.reviews': { paramsTuple?: []; params?: {} }
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'travel_apis.index': { paramsTuple?: []; params?: {} }
+    'travel_apis.get_public_images': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'auth.new_account.store': { paramsTuple?: []; params?: {} }

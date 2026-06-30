@@ -199,4 +199,16 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'travel_apis.get_public_images': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/images'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }

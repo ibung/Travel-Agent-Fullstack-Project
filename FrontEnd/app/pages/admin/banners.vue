@@ -10,7 +10,14 @@ const tokenCookie = useCookie('admin_token')
 const { data: apiResponse, refresh } = await useFetch('http://localhost:3333/api/travel-data')
 const banners = computed(() => apiResponse.value?.data?.banners || [])
 
-const form = ref({ title: '', image: 'banner-promo.jpg' })
+const { data: imageList } = await useFetch('http://localhost:3333/api/images', {
+  headers: {
+    Authorization: `Bearer ${tokenCookie.value}`
+  }
+})
+const availableImages = computed(() => imageList.value?.data || [])
+
+const form = ref({ title: '', image: availableImages.value[0] || '' })
 const isSubmitting = ref(false)
 const isEditing = ref(false)
 const editId = ref(null)
@@ -25,7 +32,7 @@ const startEdit = (banner) => {
 const cancelEdit = () => {
   isEditing.value = false
   editId.value = null
-  form.value = { title: '', image: 'banner-promo.jpg' }
+  form.value = { title: '', image: availableImages.value[0] || '' }
 }
 
 const handleSaveBanner = async () => {
@@ -106,8 +113,7 @@ const handleDeleteBanner = async (id) => {
             <div>
               <label class="block text-xs font-semibold text-gray-500 mb-1">Media Gambar</label>
               <select v-model="form.image" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="banner-promo.jpg">banner-promo.jpg</option>
-                <option value="banner-hero.jpg">banner-hero.jpg</option>
+                <option v-for="img in availableImages" :key="img" :value="img">{{ img }}</option>
               </select>
             </div>
             <div class="flex gap-2">

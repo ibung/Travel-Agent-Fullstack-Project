@@ -1,3 +1,5 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import type { HttpContext } from '@adonisjs/core/http'
 import Package from '../models/package.js'
 import Banner from '../models/banner.js'
@@ -13,6 +15,21 @@ export default class TravelApisController {
     return response.ok({
       data: { banners, packages, reviews },
     })
+  }
+
+  async banners({ response }: HttpContext) {
+    const banners = await Banner.all()
+    return response.ok({ data: banners })
+  }
+
+  async packages({ response }: HttpContext) {
+    const packages = await Package.all()
+    return response.ok({ data: packages })
+  }
+
+  async reviews({ response }: HttpContext) {
+    const reviews = await Review.all()
+    return response.ok({ data: reviews })
   }
 
   // ================= KELOLA PAKET =================
@@ -79,4 +96,27 @@ async updateBanner({ params, request, response }: HttpContext) {
     data: banner,
   })
 }
+
+// ================= KELOLA GAMBAR =================
+async getPublicImages({ response }: HttpContext) {
+  try {
+    // Arahkan ke folder public di FrontEnd
+    const publicPath = path.join(process.cwd(), '..', 'FrontEnd', 'public')
+    const files = await fs.readdir(publicPath)
+    
+    // Filter hanya file gambar
+    const images = files.filter((file) => {
+      const ext = path.extname(file).toLowerCase()
+      return ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif'].includes(ext)
+    })
+
+    return response.ok({ data: images })
+  } catch (error) {
+    return response.internalServerError({ 
+      message: 'Gagal mengambil daftar gambar', 
+      error: error.message 
+    })
+  }
+}
+
 }

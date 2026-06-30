@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 // Ambil data secara langsung dari port Backend AdonisJS
 const { data: apiResponse, pending, error, refresh } = await useFetch('http://localhost:3333/api/travel-data')
@@ -46,6 +46,53 @@ const handleSendReview = async () => {
     isSubmitting.value = false
   }
 }
+
+const currentBannerIndex = ref(0)
+let bannerInterval = null
+
+const nextBanner = () => {
+  if (banners.value.length > 0) {
+    currentBannerIndex.value = (currentBannerIndex.value + 1) % banners.value.length
+  }
+}
+
+const prevBanner = () => {
+  if (banners.value.length > 0) {
+    currentBannerIndex.value = (currentBannerIndex.value - 1 + banners.value.length) % banners.value.length
+  }
+}
+
+const setBanner = (index) => {
+  currentBannerIndex.value = index
+}
+
+const resetBannerInterval = () => {
+  if (bannerInterval) clearInterval(bannerInterval)
+  bannerInterval = setInterval(nextBanner, 3000)
+}
+
+const manualNextBanner = () => {
+  nextBanner()
+  resetBannerInterval()
+}
+
+const manualPrevBanner = () => {
+  prevBanner()
+  resetBannerInterval()
+}
+
+const manualSetBanner = (index) => {
+  setBanner(index)
+  resetBannerInterval()
+}
+
+onMounted(() => {
+  resetBannerInterval()
+})
+
+onUnmounted(() => {
+  if (bannerInterval) clearInterval(bannerInterval)
+})
 </script>
 
 <template>
@@ -64,6 +111,51 @@ const handleSendReview = async () => {
       </div>
     </header>
 
+    <!-- Full Width Carousel Banner -->
+    <div v-if="!pending && !error && banners.length" class="relative w-full h-[450px] overflow-hidden group">
+      <div 
+        class="flex transition-transform duration-700 ease-in-out h-full"
+        :style="{ transform: `translateX(-${currentBannerIndex * 100}%)` }"
+      >
+        <div 
+          v-for="banner in banners" 
+          :key="banner.id" 
+          class="w-full flex-shrink-0 h-full relative"
+        >
+          <img :src="`/${banner.image}`" class="absolute inset-0 w-full h-full object-cover" alt="Banner Promo">
+          <div class="absolute inset-0 bg-black/40"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white text-center drop-shadow-lg px-4">{{ banner.title }}</h2>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Controls -->
+      <button 
+        @click="manualPrevBanner" 
+        class="absolute left-6 top-1/2 -translate-y-1/2 text-white hover:text-blue-600 hover:scale-125 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+      >
+        <UIcon name="i-heroicons-chevron-left" class="w-10 h-10 drop-shadow-md" />
+      </button>
+      <button 
+        @click="manualNextBanner" 
+        class="absolute right-6 top-1/2 -translate-y-1/2 text-white hover:text-blue-600 hover:scale-125 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+      >
+        <UIcon name="i-heroicons-chevron-right" class="w-10 h-10 drop-shadow-md" />
+      </button>
+
+      <!-- Indicators -->
+      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+        <button 
+          v-for="(_, index) in banners" 
+          :key="'ind-'+index"
+          @click="manualSetBanner(index)"
+          class="w-2 h-2 rounded-full transition-colors shadow-sm"
+          :class="currentBannerIndex === index ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'"
+        ></button>
+      </div>
+    </div>
+
     <div class="container mx-auto px-4 py-8 max-w-6xl">
       
       <div v-if="pending" class="text-center py-20">
@@ -77,20 +169,6 @@ const handleSendReview = async () => {
 
       <div v-else class="space-y-16">
         
-        <section>
-          <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <UIcon name="i-heroicons-ticket" class="text-blue-600 w-5 h-5" />
-            Promo Spesial Menantimu
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div v-for="banner in banners" :key="banner.id" class="relative overflow-hidden rounded-2xl shadow-md bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-8 h-44 flex flex-col justify-end group">
-              <img :src="`/${banner.image}`" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="Banner Promo">
-              <div class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
-              <h3 class="text-lg font-bold relative z-10 leading-tight drop-shadow-md">{{ banner.title }}</h3>
-            </div>
-          </div>
-        </section>
-
         <section id="packages">
           <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <UIcon name="i-heroicons-globe-asia-australia" class="text-blue-600 w-5 h-5" />

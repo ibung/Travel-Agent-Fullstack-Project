@@ -10,6 +10,8 @@ const tokenCookie = useCookie('admin_token')
 const { data: apiResponse, refresh } = await useFetch('http://localhost:3333/api/travel-data')
 const banners = computed(() => apiResponse.value?.data?.banners || [])
 
+const isSidebarOpen = useState('isSidebarOpen', () => true)
+
 const { data: imageList } = await useFetch('http://localhost:3333/api/images', {
   headers: {
     Authorization: `Bearer ${tokenCookie.value}`
@@ -59,7 +61,7 @@ const handleSaveBanner = async () => {
   } catch (err) {
     if (err?.response?.status === 401) {
       statusMessage.value = 'Sesi habis. Silakan login ulang.'
-      await navigateTo('/admin/login')
+      await navigateTo('/login')
     } else {
       statusMessage.value = 'Gagal memproses data banner.'
     }
@@ -80,7 +82,7 @@ const handleDeleteBanner = async (id) => {
       refresh()
     } catch (err) {
       if (err?.response?.status === 401) {
-        await navigateTo('/admin/login')
+        await navigateTo('/login')
       } else {
         alert('Gagal menghapus data.')
       }
@@ -91,13 +93,20 @@ const handleDeleteBanner = async (id) => {
 
 
 <template>
-  <div class="flex bg-gray-50 min-h-screen text-gray-900 font-sans">
-    <AdminSidebar />
+  <div class="flex h-screen bg-gray-50 font-sans overflow-hidden">
+    <div :class="isSidebarOpen ? 'w-64' : 'w-0'" class="transition-[width] duration-300 ease-in-out overflow-hidden flex-shrink-0 h-full">
+      <AdminSidebar />
+    </div>
     
-    <main class="flex-grow p-8 max-w-5xl">
-      <div class="mb-6 flex items-center gap-2 text-xl font-bold">
-        <UIcon name="i-heroicons-photo" class="text-blue-600" />
-        <h2>Manajemen Banner Promosi</h2>
+    <main class="flex-1 p-8 overflow-y-auto w-full transition-all duration-300">
+      <div class="flex items-center gap-4 mb-8">
+        <button @click="isSidebarOpen = !isSidebarOpen" class="p-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
+          <UIcon name="i-heroicons-bars-3" class="w-5 h-5 text-gray-700" />
+        </button>
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2 m-0">
+          <UIcon name="i-heroicons-photo" class="text-blue-600 w-6 h-6" />
+          Manajemen Banner Promosi
+        </h2>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -133,12 +142,16 @@ const handleDeleteBanner = async (id) => {
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-gray-50 text-gray-500 text-xs font-semibold border-b">
+                <th class="p-3 w-24">Media</th>
                 <th class="p-3">Judul Promo</th>
                 <th class="p-3 text-center">Tindakan</th>
               </tr>
             </thead>
             <tbody class="divide-y text-sm">
               <tr v-for="banner in banners" :key="banner.id" class="hover:bg-gray-50">
+                <td class="p-3">
+                  <img :src="`/${banner.image}`" class="w-20 h-10 object-cover rounded-md shadow-sm border border-gray-100" alt="Banner" />
+                </td>
                 <td class="p-3 font-medium text-gray-900">{{ banner.title }}</td>
                 <td class="p-3 flex justify-center gap-2">
                   <button @click="startEdit(banner)" class="text-blue-600 hover:text-blue-700 font-medium text-xs flex items-center gap-1 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg transition-colors">

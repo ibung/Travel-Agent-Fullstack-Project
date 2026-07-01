@@ -3,6 +3,7 @@ definePageMeta({ layout: false })
 
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const isLoading = ref(false)
 const errorMsg = ref('')
 
@@ -24,9 +25,17 @@ const handleLogin = async () => {
 
     if (res?.data?.token) {
       tokenCookie.value = res.data.token
+    } else if (res?.token) {
+      // In case the API returns token directly at the root
+      tokenCookie.value = res.token
     }
 
-    await navigateTo('/admin/packages')
+    // Arahkan berdasarkan email (karena belum ada tabel roles)
+    if (email.value === 'admin@travel.com') {
+      await navigateTo('/admin/packages')
+    } else {
+      await navigateTo('/')
+    }
   } catch (err) {
     const status = err?.response?.status
     if (status === 400 || status === 401 || status === 422) {
@@ -50,7 +59,7 @@ const handleLogin = async () => {
           <UIcon name="i-heroicons-paper-airplane" class="w-8 h-8 text-blue-600 rotate-45" />
           <h1 class="text-2xl font-bold text-blue-600 font-sans">KONG Travel</h1>
         </div>
-        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Admin Control Panel</p>
+        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Login</p>
       </div>
 
       <!-- Login Form -->
@@ -62,21 +71,30 @@ const handleLogin = async () => {
             v-model="email"
             type="email"
             class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none border-gray-200"
-            placeholder="admin@travel.com"
+            placeholder="Masukkan Email Anda"
             required
           />
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-gray-500 mb-1" for="password">Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none border-gray-200"
-            placeholder="••••••••"
-            required
-          />
+          <div class="relative">
+            <input
+              id="password"
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none border-gray-200"
+              placeholder="••••••••"
+              required
+            />
+            <button 
+              type="button" 
+              @click="showPassword = !showPassword"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-blue-600"
+            >
+              <UIcon :name="showPassword ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'" class="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <!-- Error Msg -->
@@ -95,9 +113,9 @@ const handleLogin = async () => {
       </form>
 
       <!-- Back Link -->
-      <div class="mt-6 text-center border-t border-gray-100 pt-4">
-        <NuxtLink to="/" class="text-xs text-gray-400 hover:text-blue-600 transition-colors font-medium flex items-center justify-center gap-1">
-          <UIcon name="i-heroicons-arrow-left" class="w-3.5 h-3.5" />
+      <div class="mt-6 text-center border-t border-gray-100 pt-6">
+        <NuxtLink to="/" class="text-xs text-gray-500 hover:text-blue-600 transition-colors font-semibold flex items-center justify-center gap-1.5">
+          <UIcon name="i-heroicons-arrow-left" class="w-4 h-4" />
           Kembali ke Website Utama
         </NuxtLink>
       </div>

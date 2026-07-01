@@ -10,7 +10,7 @@ export default class TravelApisController {
   async index({ response }: HttpContext) {
     const banners = await Banner.all()
     const packages = await Package.all()
-    const reviews = await Review.all()
+    const reviews = await Review.query().preload('package')
 
     return response.ok({
       data: { banners, packages, reviews },
@@ -28,7 +28,7 @@ export default class TravelApisController {
   }
 
   async reviews({ response }: HttpContext) {
-    const reviews = await Review.all()
+    const reviews = await Review.query().preload('package')
     return response.ok({ data: reviews })
   }
 
@@ -59,9 +59,16 @@ export default class TravelApisController {
   }
 
   // ================= KELOLA REVIEWS =================
-  async storeReview({ request, response }: HttpContext) {
-    const data = request.only(['customerName', 'reviewText', 'rating'])
-    const newReview = await Review.create(data)
+  async storeReview({ request, response, auth }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const data = request.only(['packageId', 'reviewText', 'rating'])
+    const newReview = await Review.create({
+      packageId: data.packageId,
+      reviewText: data.reviewText,
+      rating: data.rating,
+      userId: user.id,
+      customerName: user.fullName || 'User'
+    })
     return response.created({ message: 'Review berhasil ditambahkan', data: newReview })
   }
 

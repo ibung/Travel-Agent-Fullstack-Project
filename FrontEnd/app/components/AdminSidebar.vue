@@ -15,12 +15,12 @@ const handleLogout = async () => {
   }
   
   tokenCookie.value = null
-  await navigateTo('/admin/login')
+  await navigateTo('/login')
 }
 </script>
 
 <template>
-  <aside class="w-64 bg-gray-900 text-gray-300 min-h-screen p-5 flex flex-col justify-between border-r border-gray-800">
+  <aside class="w-64 bg-gray-900 text-gray-300 h-full p-5 flex flex-col justify-between border-r border-gray-800">
     <div>
       <div class="mb-8 px-2">
         <h1 class="text-md font-bold text-white tracking-wider uppercase">CMS Control Panel</h1>

@@ -4,6 +4,30 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 // Ambil data secara langsung dari port Backend AdonisJS
 const { data: apiResponse, pending, error, refresh } = await useFetch('http://localhost:3333/api/travel-data')
 
+const token = useCookie('admin_token')
+const { data: profileRes } = await useFetch('http://localhost:3333/api/v1/account/profile', {
+  headers: computed(() => ({ Authorization: `Bearer ${token.value}` })),
+  server: false,
+})
+
+const userInitials = computed(() => {
+  if (profileRes.value?.data?.fullName) {
+    const names = profileRes.value.data.fullName.split(' ')
+    if (names.length > 1) return (names[0][0] + names[1][0]).toUpperCase()
+    return names[0].substring(0, 2).toUpperCase()
+  }
+  return 'U'
+})
+
+const showLogoutPopup = ref(false)
+
+const confirmLogout = () => {
+  token.value = null
+  profileRes.value = null
+  showLogoutPopup.value = false
+  window.location.reload()
+}
+
 // Memecah payload JSON untuk masing-masing bagian
 const banners = computed(() => apiResponse.value?.data?.banners || [])
 const packages = computed(() => apiResponse.value?.data?.packages || [])
@@ -18,38 +42,47 @@ const filteredPackages = computed(() => {
 })
 
 // Form state untuk review baru
-const newCustomerName = ref('')
+const newPackageId = ref('')
 const newReviewText = ref('')
 const newRating = ref(5)
 const isSubmitting = ref(false)
-const statusMessage = ref('')
+const showSuccessPopup = ref(false)
+const showLoginRequiredPopup = ref(false)
 const isError = ref(false)
 
 const handleSendReview = async () => {
+  if (!token.value) {
+    showLoginRequiredPopup.value = true
+    return
+  }
+  
   isSubmitting.value = true
-  statusMessage.value = ''
   isError.value = false
 
   try {
     await $fetch('http://localhost:3333/api/reviews', {
       method: 'POST',
+      headers: { Authorization: `Bearer ${token.value}` },
       body: {
-        customerName: newCustomerName.value,
+        packageId: newPackageId.value,
         reviewText: newReviewText.value,
         rating: Number(newRating.value)
       }
     })
     
-    statusMessage.value = 'Ulasan Anda berhasil dikirim! Terima kasih atas feedback-nya.'
-    newCustomerName.value = ''
+    showSuccessPopup.value = true
+    newPackageId.value = ''
     newReviewText.value = ''
     newRating.value = 5
     
+    // Auto close popup
+    setTimeout(() => { showSuccessPopup.value = false }, 3000)
+
     // Refresh data agar ulasan baru langsung muncul
     refresh()
   } catch (err) {
     isError.value = true
-    statusMessage.value = 'Gagal mengirim ulasan. Silakan coba lagi.'
+    alert('Gagal mengirim ulasan. Silakan coba lagi.')
   } finally {
     isSubmitting.value = false
   }
@@ -127,27 +160,104 @@ const filterAndScrollTo = (type) => {
           </div>
         </NuxtLink>
 
-        <!-- Menu Tengah -->
-        <nav class="hidden md:flex items-center gap-8">
-          <NuxtLink to="#destinasi" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
-            Destinasi
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+        <div class="flex items-center gap-12 lg:gap-16">
+          <!-- Menu Tengah -->
+          <nav class="hidden md:flex items-center gap-8">
+            <NuxtLink to="#destinasi" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
+              Destinasi
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+            </NuxtLink>
+            <NuxtLink to="#layanan" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
+              Layanan
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+            </NuxtLink>
+            <NuxtLink to="#testimoni" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
+              Testimoni
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+            </NuxtLink>
+            <NuxtLink to="#kontak" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
+              Kontak
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+            </NuxtLink>
+          </nav>
+
+          <!-- Login / Profile Action -->
+          <div v-if="token" class="relative group">
+            <button class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm tracking-wide shadow-sm hover:bg-blue-700 transition-colors">
+              {{ userInitials }}
+            </button>
+            <div class="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div class="px-4 py-3 border-b border-gray-100">
+                <p class="text-sm font-semibold text-gray-800 truncate">{{ profileRes?.data?.fullName || 'User' }}</p>
+                <p class="text-xs text-gray-500 truncate mt-0.5">{{ profileRes?.data?.email || '' }}</p>
+              </div>
+              <NuxtLink v-if="profileRes?.data?.email === 'admin@travel.com'" to="/admin/packages" class="block w-full text-left px-4 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100 flex items-center justify-between">
+                Kelola Web
+                <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" />
+              </NuxtLink>
+              <button @click="showLogoutPopup = true" class="block w-full text-left px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-b-xl transition-colors">
+                Logout
+              </button>
+            </div>
+          </div>
+          <NuxtLink v-else to="/login" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-700 transition-colors">
+            Login
           </NuxtLink>
-          <NuxtLink to="#layanan" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
-            Layanan
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
-          </NuxtLink>
-          <NuxtLink to="#testimoni" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
-            Testimoni
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
-          </NuxtLink>
-          <NuxtLink to="#kontak" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
-            Kontak
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
-          </NuxtLink>
-        </nav>
+        </div>
       </div>
     </header>
+
+    <!-- Logout Confirmation Popup -->
+    <div v-if="showLogoutPopup" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm mx-auto transform transition-all text-center">
+        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+          <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-6 h-6 text-red-600" />
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Logout</h3>
+        <p class="text-sm text-gray-600 mb-6">Apakah Anda yakin ingin keluar dari akun ini?</p>
+        <div class="flex gap-3">
+          <button @click="showLogoutPopup = false" class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+            Tidak
+          </button>
+          <button @click="confirmLogout" class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors">
+            Ya, Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Success Popup -->
+    <div v-if="showSuccessPopup" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm mx-auto transform transition-all text-center animate-bounce-in">
+        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+          <UIcon name="i-heroicons-check" class="w-6 h-6 text-green-600" />
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Berhasil!</h3>
+        <p class="text-sm text-gray-600 mb-6">Ulasan Anda berhasil dikirim! Terima kasih atas feedback-nya.</p>
+        <button @click="showSuccessPopup = false" class="w-full px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+          Tutup
+        </button>
+      </div>
+    </div>
+
+    <!-- Login Required Popup -->
+    <div v-if="showLoginRequiredPopup" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm mx-auto transform transition-all text-center">
+        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+          <UIcon name="i-heroicons-lock-closed" class="w-6 h-6 text-blue-600" />
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Akses Terbatas</h3>
+        <p class="text-sm text-gray-600 mb-6">Anda harus login terlebih dahulu untuk dapat memberikan ulasan destinasi.</p>
+        <div class="flex gap-3">
+          <button @click="showLoginRequiredPopup = false" class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+            Nanti Saja
+          </button>
+          <NuxtLink to="/login" class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors block">
+            Login Sekarang
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
 
     <!-- Full Width Carousel Banner -->
     <div v-if="!pending && !error && banners.length" class="relative w-full h-[450px] overflow-hidden group">
@@ -207,7 +317,7 @@ const filterAndScrollTo = (type) => {
 
       <div v-else class="space-y-16">
         
-        <section id="destinasi">
+        <section id="destinasi" class="scroll-mt-24">
           <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
               <UIcon name="i-heroicons-globe-asia-australia" class="text-blue-600 w-5 h-5" />
@@ -270,7 +380,7 @@ const filterAndScrollTo = (type) => {
           </div>
         </section>
 
-        <section id="layanan">
+        <section id="layanan" class="scroll-mt-24">
           <div class="mb-8">
             <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2 mb-2">
               <UIcon name="i-heroicons-sparkles" class="text-blue-600 w-5 h-5" />
@@ -282,8 +392,8 @@ const filterAndScrollTo = (type) => {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Card 1 (Travel) -->
             <div @click="filterAndScrollTo('travel')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
-              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
-                <UIcon name="i-heroicons-truck" class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+              <div class="w-16 h-16 rounded-full overflow-hidden mb-4 shadow-sm group-hover:ring-4 group-hover:ring-blue-100 transition-all flex items-center justify-center">
+                <img src="/travel.jpg" alt="Travel Antar Kota" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
               <h3 class="font-bold text-gray-800 mb-2">Travel Antar Kota</h3>
               <p class="text-xs text-gray-500 leading-relaxed mb-4 flex-grow">Layanan travel reguler dan point-to-point untuk perjalanan antar kota yang cepat dan nyaman.</p>
@@ -294,8 +404,8 @@ const filterAndScrollTo = (type) => {
             
             <!-- Card 2 (Bus) -->
             <div @click="filterAndScrollTo('bus')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
-              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
-                <UIcon name="i-heroicons-user-group" class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+              <div class="w-16 h-16 rounded-full overflow-hidden mb-4 shadow-sm group-hover:ring-4 group-hover:ring-blue-100 transition-all flex items-center justify-center">
+                <img src="/bus.jpg" alt="Bus Pariwisata" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
               <h3 class="font-bold text-gray-800 mb-2">Bus Pariwisata</h3>
               <p class="text-xs text-gray-500 leading-relaxed mb-4 flex-grow">Sewa armada bus pariwisata untuk liburan rombongan, study tour, atau gathering perusahaan.</p>
@@ -306,8 +416,8 @@ const filterAndScrollTo = (type) => {
             
             <!-- Card 3 (Pesawat) -->
             <div @click="filterAndScrollTo('pesawat')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
-              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
-                <UIcon name="i-heroicons-paper-airplane" class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+              <div class="w-16 h-16 rounded-full overflow-hidden mb-4 shadow-sm group-hover:ring-4 group-hover:ring-blue-100 transition-all flex items-center justify-center">
+                <img src="/pesawat.jpg" alt="Tiket Pesawat" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
               <h3 class="font-bold text-gray-800 mb-2">Tiket Pesawat</h3>
               <p class="text-xs text-gray-500 leading-relaxed mb-4 flex-grow">Pemesanan tiket pesawat rute domestik dan internasional dengan penawaran harga terbaik.</p>
@@ -318,8 +428,8 @@ const filterAndScrollTo = (type) => {
             
             <!-- Card 4 (Kereta) -->
             <div @click="filterAndScrollTo('kereta')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
-              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
-                <UIcon name="i-heroicons-ticket" class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+              <div class="w-16 h-16 rounded-full overflow-hidden mb-4 shadow-sm group-hover:ring-4 group-hover:ring-blue-100 transition-all flex items-center justify-center">
+                <img src="/kereta.jpg" alt="Kereta Api" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
               <h3 class="font-bold text-gray-800 mb-2">Kereta Api</h3>
               <p class="text-xs text-gray-500 leading-relaxed mb-4 flex-grow">Reservasi tiket kereta api anti ribet untuk perjalanan bebas macet melintasi pulau Jawa & Sumatera.</p>
@@ -330,7 +440,7 @@ const filterAndScrollTo = (type) => {
           </div>
         </section>
 
-        <section id="testimoni">
+        <section id="testimoni" class="scroll-mt-24">
           <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <UIcon name="i-heroicons-chat-bubble-left-right" class="text-blue-600 w-5 h-5" />
             Ulasan Juara dari Traveler
@@ -362,17 +472,20 @@ const filterAndScrollTo = (type) => {
             
             <form @submit.prevent="handleSendReview" class="space-y-4">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Lengkap</label>
-                  <input
-                    v-model="newCustomerName"
-                    type="text"
-                    placeholder="Nama Anda"
-                    class="w-full text-xs border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none border-gray-200"
+                <div class="col-span-1 sm:col-span-2">
+                  <label class="block text-xs font-semibold text-gray-500 mb-1">Paket yang Diulas</label>
+                  <select 
+                    v-model="newPackageId"
                     required
-                  />
+                    class="w-full text-xs border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none border-gray-200 bg-white"
+                  >
+                    <option value="" disabled>Pilih Paket Destinasi...</option>
+                    <option v-for="pkg in packages" :key="pkg.id" :value="pkg.id">
+                      {{ pkg.name }} ({{ pkg.origin }} - {{ pkg.destination }})
+                    </option>
+                  </select>
                 </div>
-                <div>
+                <div class="col-span-1 sm:col-span-2 mt-2">
                   <label class="block text-xs font-semibold text-gray-500 mb-1">Rating Destinasi</label>
                   <div class="flex items-center gap-1 h-9">
                     <button
@@ -412,14 +525,6 @@ const filterAndScrollTo = (type) => {
                 >
                   {{ isSubmitting ? 'Mengirim...' : 'Kirim Ulasan' }}
                 </button>
-                
-                <p
-                  v-if="statusMessage"
-                  class="text-xs font-medium text-center"
-                  :class="isError ? 'text-red-600' : 'text-green-600'"
-                >
-                  {{ statusMessage }}
-                </p>
               </div>
             </form>
           </div>
@@ -428,7 +533,7 @@ const filterAndScrollTo = (type) => {
     </div>
 
     <!-- Footer Seksi Kontak Baru -->
-    <footer id="kontak" class="bg-blue-600 border-t border-blue-700 mt-20 py-12 text-xs text-blue-100">
+    <footer id="kontak" class="bg-blue-600 border-t border-blue-700 mt-20 py-12 text-xs text-blue-100 scroll-mt-24">
       <div class="container mx-auto px-4 max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <div class="flex items-center gap-2 mb-4">
@@ -438,11 +543,12 @@ const filterAndScrollTo = (type) => {
           <p class="leading-relaxed">Solusi lengkap perjalanan wisata nusantara tepercaya. Temukan penawaran terbaik dan destinasi impian Anda bersama kami.</p>
         </div>
         <div>
-          <h4 class="font-bold text-white text-sm mb-4">Menu Pintar</h4>
+          <h4 class="font-bold text-white text-sm mb-4">Jelajahi KONG</h4>
           <ul class="space-y-2.5">
-            <li><NuxtLink to="#destinasi" class="hover:text-white transition-colors">Daftar Paket Destinasi</NuxtLink></li>
-            <li><NuxtLink to="#testimoni" class="hover:text-white transition-colors">Ulasan Pelanggan</NuxtLink></li>
-            <li><NuxtLink to="/admin" class="hover:text-white transition-colors">Dashboard Admin</NuxtLink></li>
+            <li class="flex items-center gap-2"><UIcon name="i-heroicons-chevron-right" class="w-3 h-3 text-blue-300"/> Halaman Utama</li>
+            <li class="flex items-center gap-2"><UIcon name="i-heroicons-chevron-right" class="w-3 h-3 text-blue-300"/> Pilihan Paket Destinasi</li>
+            <li class="flex items-center gap-2"><UIcon name="i-heroicons-chevron-right" class="w-3 h-3 text-blue-300"/> Armada & Transportasi</li>
+            <li class="flex items-center gap-2"><UIcon name="i-heroicons-chevron-right" class="w-3 h-3 text-blue-300"/> Kisah & Ulasan Pelanggan</li>
           </ul>
         </div>
         <div>
@@ -458,7 +564,7 @@ const filterAndScrollTo = (type) => {
             </li>
             <li class="flex items-center gap-2">
               <UIcon name="i-heroicons-map-pin" class="text-blue-200 w-4 h-4" />
-              <span>Ubud, Gianyar, Bali, Indonesia</span>
+              <span>Parongpong, Bandung Barat, Jawa Barat, Indonesia</span>
             </li>
           </ul>
         </div>

@@ -77,7 +77,7 @@ export class PackageSchema extends BaseModel {
 }
 
 export class ReviewSchema extends BaseModel {
-  static $columns = ['createdAt', 'customerName', 'id', 'rating', 'reviewText', 'updatedAt'] as const
+  static $columns = ['createdAt', 'customerName', 'id', 'packageId', 'rating', 'reviewText', 'updatedAt', 'userId'] as const
   $columns = ReviewSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -86,11 +86,15 @@ export class ReviewSchema extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
   @column()
+  declare packageId: number | null
+  @column()
   declare rating: number | null
   @column()
   declare reviewText: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+  @column()
+  declare userId: number | null
 }
 
 export class UserSchema extends BaseModel {

@@ -6,6 +6,8 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
+      table.integer('package_id').unsigned().references('id').inTable('packages').onDelete('CASCADE')
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table.string('customer_name').notNullable() // Nama customer
       table.text('review_text').notNullable()    // Isi review/testimoni 
       table.integer('rating').nullable()         // Rating bintang (opsional, misal 1-5)

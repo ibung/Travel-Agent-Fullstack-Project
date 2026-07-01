@@ -8,10 +8,31 @@ export default class extends BaseSeeder {
   async run() {
     // 0. Data Admin User
     const adminExists = await User.findBy('email', 'admin@travel.com')
-    if (!adminExists) {
-      await User.create({
+    let adminUser = adminExists
+    if (!adminUser) {
+      adminUser = await User.create({
         fullName: 'Admin Travel KONG',
         email: 'admin@travel.com',
+        password: 'password123',
+      })
+    }
+
+    const user1Exists = await User.findBy('email', 'budi@gmail.com')
+    let user1 = user1Exists
+    if (!user1) {
+      user1 = await User.create({
+        fullName: 'Budi Santoso',
+        email: 'budi@gmail.com',
+        password: 'password123',
+      })
+    }
+
+    const user2Exists = await User.findBy('email', 'siti@gmail.com')
+    let user2 = user2Exists
+    if (!user2) {
+      user2 = await User.create({
+        fullName: 'Siti Rahma',
+        email: 'siti@gmail.com',
         password: 'password123',
       })
     }
@@ -50,11 +71,15 @@ export default class extends BaseSeeder {
     // 3. Data Dummy Reviews
     await Review.createMany([
       {
+        packageId: 1, // Asumsi ID 1 (Bus Eksekutif)
+        userId: user1.id,
         customerName: 'Budi Santoso',
         reviewText: 'Pelayanannya top banget! Hotel bersih, tour guide ramah, sangat direkomendasikan.',
         rating: 5,
       },
       {
+        packageId: 2, // Asumsi ID 2 (Bus VIP Bali)
+        userId: user2.id,
         customerName: 'Siti Rahma',
         reviewText: 'Liburan ke Bali jadi gak ribet, semua diurus dengan rapi sama Travel Agent ini.',
         rating: 4,

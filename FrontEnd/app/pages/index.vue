@@ -139,6 +139,14 @@ const filterAndScrollTo = (type) => {
   selectedTransport.value = type
   document.getElementById('destinasi')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
+
+const selectedPackage = ref(null)
+const showPackageModal = ref(false)
+
+const openPackageModal = (pkg) => {
+  selectedPackage.value = pkg
+  showPackageModal.value = true
+}
 </script>
 
 <template>
@@ -339,7 +347,7 @@ const filterAndScrollTo = (type) => {
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div v-for="pkg in filteredPackages" :key="pkg.id" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer group">
+            <div v-for="pkg in filteredPackages" :key="pkg.id" @click="openPackageModal(pkg)" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer group">
               <div class="relative h-48 w-full overflow-hidden">
                 <img :src="`/${pkg.image}`" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Destinasi">
                 <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-bold text-gray-800 flex items-center gap-1 shadow-sm">
@@ -529,6 +537,70 @@ const filterAndScrollTo = (type) => {
             </form>
           </div>
         </section>
+      </div>
+    </div>
+
+    <!-- Package Details Modal -->
+    <div v-if="showPackageModal && selectedPackage" @click.self="showPackageModal = false" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-auto overflow-hidden flex flex-col animate-bounce-in max-h-[90vh]">
+        <div class="relative h-64 w-full flex-shrink-0">
+          <img :src="`/${selectedPackage.image}`" class="w-full h-full object-cover" alt="Detail Destinasi">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+          <div class="absolute bottom-4 left-6 right-6">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm">{{ selectedPackage.transportType || selectedPackage.transport_type }}</span>
+              <div class="bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-bold text-white flex items-center gap-1 shadow-sm">
+                <UIcon name="i-heroicons-star-16-solid" class="text-yellow-400 w-4 h-4" />
+                {{ selectedPackage.rating }}
+              </div>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-1">{{ selectedPackage.name }}</h2>
+            <div class="flex items-center gap-2 text-gray-200 text-sm font-medium">
+              <span>{{ selectedPackage.origin }}</span>
+              <UIcon name="i-heroicons-arrow-right" class="w-4 h-4" />
+              <span>{{ selectedPackage.destination }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-6 overflow-y-auto flex-grow">
+          <div class="flex justify-between items-start mb-6 pb-6 border-b border-gray-100">
+            <div>
+              <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Provider Transportasi</p>
+              <p class="text-gray-900 font-bold flex items-center gap-2">
+                <UIcon name="i-heroicons-building-office-2" class="w-5 h-5 text-blue-600" />
+                {{ selectedPackage.provider }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Estimasi Biaya</p>
+              <p class="text-blue-600 font-extrabold text-xl">Rp {{ Number(selectedPackage.price).toLocaleString('id-ID') }}</p>
+            </div>
+          </div>
+          
+          <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <UIcon name="i-heroicons-information-circle" class="w-5 h-5 text-blue-600" />
+            Detail Perjalanan & Fasilitas
+          </h3>
+          <div class="text-sm text-gray-600 leading-relaxed space-y-4">
+            <p v-if="selectedPackage.description" class="font-medium text-gray-800">{{ selectedPackage.description }}</p>
+            <p>
+              Siapkan diri Anda untuk sebuah pengalaman perjalanan yang tak terlupakan bersama <strong>{{ selectedPackage.provider }}</strong>. Rute perjalanan dari <strong>{{ selectedPackage.origin }}</strong> menuju <strong>{{ selectedPackage.destination }}</strong> kini terasa lebih mudah, eksklusif, dan sangat memuaskan. Dengan menggunakan dukungan armada <strong>{{ selectedPackage.transportType || selectedPackage.transport_type }}</strong> kelas atas, kami senantiasa memastikan standar kenyamanan maupun tingkat keamanan Anda tetap terjaga dengan maksimal di sepanjang rute perjalanan wisata Anda.
+            </p>
+            <p>
+              Fasilitas unggulan yang kami tawarkan pada armada meliputi kursi yang ergonomis dan sangat nyaman, ruang kaki (<em>legroom</em>) yang ekstra lega untuk berselonjor, sistem hiburan terpadu yang memanjakan mata selama perjalanan, serta kualitas pelayanan yang sangat ramah dan profesional dari kru berpengalaman kami. Anda dapat bersantai menikmati pesona pemandangan alam nusantara yang menakjubkan selama di perjalanan, melepas penat sejenak dari hiruk-pikuk rutinitas harian yang melelahkan, dan pada akhirnya menciptakan berbagai momen liburan yang indah dan berkesan bersama keluarga dan orang-orang terkasih.
+            </p>
+            <p>
+              Segera mantapkan hati dan pilih paket perjalanan luar biasa ini untuk meraih pengalaman liburan berkelas premium tanpa perlu menguras isi dompet Anda. KONG Travel Agent akan selalu hadir menjadi mitra sahabat perjalanan terbaik Anda, siap sedia mewujudkan destinasi liburan impian Anda menjadi kenyataan yang tak ternilai harganya. Pesan sekarang dan raih kualitas pelayanan wisata yang tak tertandingi di kelasnya!
+            </p>
+          </div>
+        </div>
+        
+        <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end flex-shrink-0">
+          <button @click.stop="showPackageModal = false" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-colors shadow-sm">
+            Tutup Jendela
+          </button>
+        </div>
       </div>
     </div>
 

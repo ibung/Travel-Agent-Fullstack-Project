@@ -23,7 +23,15 @@ const form = ref({ title: '', image: availableImages.value[0] || '' })
 const isSubmitting = ref(false)
 const isEditing = ref(false)
 const editId = ref(null)
-const statusMessage = ref('')
+
+const toastInfo = ref({ show: false, message: '', type: 'success' })
+
+const showToast = (message, type = 'success') => {
+  toastInfo.value = { show: true, message, type }
+  setTimeout(() => {
+    toastInfo.value.show = false
+  }, 3000)
+}
 
 const startEdit = (banner) => {
   isEditing.value = true
@@ -39,7 +47,6 @@ const cancelEdit = () => {
 
 const handleSaveBanner = async () => {
   isSubmitting.value = true
-  statusMessage.value = ''
 
   const url = isEditing.value 
     ? `http://localhost:3333/api/banners/${editId.value}` 
@@ -55,38 +62,50 @@ const handleSaveBanner = async () => {
       },
       body: form.value
     })
-    statusMessage.value = isEditing.value ? 'Banner promosi berhasil diperbarui.' : 'Banner promosi berhasil ditambahkan.'
+    showToast(isEditing.value ? 'Banner promosi berhasil diperbarui.' : 'Banner promosi berhasil ditambahkan.', 'success')
     cancelEdit()
     refresh()
   } catch (err) {
     if (err?.response?.status === 401) {
-      statusMessage.value = 'Sesi habis. Silakan login ulang.'
+      showToast('Sesi habis. Silakan login ulang.', 'error')
       await navigateTo('/login')
     } else {
-      statusMessage.value = 'Gagal memproses data banner.'
+      showToast('Gagal memproses data banner.', 'error')
     }
   } finally {
     isSubmitting.value = false
   }
 }
 
-const handleDeleteBanner = async (id) => {
-  if (confirm('Hapus banner promo ini?')) {
-    try {
-      await $fetch(`http://localhost:3333/api/banners/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${tokenCookie.value}`
-        }
-      })
-      refresh()
-    } catch (err) {
-      if (err?.response?.status === 401) {
-        await navigateTo('/login')
-      } else {
-        alert('Gagal menghapus data.')
+const showDeleteConfirm = ref(false)
+const deleteTargetId = ref(null)
+
+const confirmDeleteBanner = (id) => {
+  deleteTargetId.value = id
+  showDeleteConfirm.value = true
+}
+
+const executeDelete = async () => {
+  if (!deleteTargetId.value) return
+  try {
+    await $fetch(`http://localhost:3333/api/banners/${deleteTargetId.value}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${tokenCookie.value}`
       }
+    })
+    showToast('Data berhasil dihapus.', 'success')
+    refresh()
+  } catch (err) {
+    if (err?.response?.status === 401) {
+      showToast('Sesi habis. Silakan login ulang.', 'error')
+      await navigateTo('/login')
+    } else {
+      showToast('Gagal menghapus data.', 'error')
     }
+  } finally {
+    showDeleteConfirm.value = false
+    deleteTargetId.value = null
   }
 }
 </script>
@@ -117,11 +136,11 @@ const handleDeleteBanner = async (id) => {
           <form @submit.prevent="handleSaveBanner" class="space-y-4">
             <div>
               <label class="block text-xs font-semibold text-gray-500 mb-1">Judul / Headline Promo</label>
-              <input v-model="form.title" type="text" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+              <input v-model="form.title" type="text" class="w-full text-sm text-gray-900 border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
             </div>
             <div>
               <label class="block text-xs font-semibold text-gray-500 mb-1">Media Gambar</label>
-              <select v-model="form.image" class="w-full text-sm border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+              <select v-model="form.image" class="w-full text-sm text-gray-900 border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 <option v-for="img in availableImages" :key="img" :value="img">{{ img }}</option>
               </select>
             </div>
@@ -130,10 +149,9 @@ const handleDeleteBanner = async (id) => {
                 Batal
               </button>
               <button type="submit" :disabled="isSubmitting" class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-3 rounded-xl shadow-sm transition-colors disabled:bg-gray-400">
-                {{ isSubmitting ? 'Memproses...' : isEditing ? 'Perbarui Banner' : 'Daftarkan Banner' }}
+                {{ isSubmitting ? 'Memproses...' : isEditing ? 'Perbarui Banner' : 'Simpan Banner' }}
               </button>
             </div>
-            <p v-if="statusMessage" class="text-center text-xs font-medium text-blue-600 mt-2">{{ statusMessage }}</p>
           </form>
         </div>
 
@@ -158,7 +176,7 @@ const handleDeleteBanner = async (id) => {
                     <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
                     Edit
                   </button>
-                  <button @click="handleDeleteBanner(banner.id)" class="text-red-600 hover:text-red-700 font-medium text-xs flex items-center gap-1 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg transition-colors">
+                  <button @click="confirmDeleteBanner(banner.id)" class="text-red-600 hover:text-red-700 font-medium text-xs flex items-center gap-1 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg transition-colors">
                     <UIcon name="i-heroicons-trash" class="w-4 h-4" />
                     Hapus
                   </button>
@@ -169,5 +187,30 @@ const handleDeleteBanner = async (id) => {
         </div>
       </div>
     </main>
+    
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirm" @click.self="showDeleteConfirm = false" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm mx-auto transform transition-all text-center animate-bounce-in">
+        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+          <UIcon name="i-heroicons-exclamation-triangle" class="w-6 h-6 text-red-600" />
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
+        <p class="text-sm text-gray-600 mb-6">Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="flex gap-3">
+          <button @click="showDeleteConfirm = false" class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+            Batal
+          </button>
+          <button @click="executeDelete" class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors">
+            Ya, Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div v-if="toastInfo.show" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border transition-all animate-bounce-in" :class="toastInfo.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'">
+      <UIcon :name="toastInfo.type === 'success' ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-circle'" class="w-6 h-6" :class="toastInfo.type === 'success' ? 'text-green-600' : 'text-red-600'" />
+      <span class="text-sm font-bold">{{ toastInfo.message }}</span>
+    </div>
   </div>
 </template>

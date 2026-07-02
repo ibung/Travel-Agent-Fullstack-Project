@@ -29,7 +29,7 @@
 
 > **Halaman Paket Review**
 
-![Package Page](./docs/screenshots/review.png)
+![Package Page](./docs/screenshots/reviews.png)
 
 > **Admin Dashboard – Kelola Paket**
 

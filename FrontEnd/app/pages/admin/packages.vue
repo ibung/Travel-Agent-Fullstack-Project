@@ -196,7 +196,7 @@ const executeDelete = async () => {
               </div>
               <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1">Rating</label>
-                <input v-model="form.rating" type="number" step="0.1" max="5" class="w-full text-sm text-gray-900 border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+                <input v-model="form.rating" type="number" step="0.1" min="0" max="5" class="w-full text-sm text-gray-900 border p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
               </div>
             </div>
             <div>

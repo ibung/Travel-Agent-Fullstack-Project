@@ -8,16 +8,16 @@ export default class Review extends BaseModel {
     @column({ isPrimary: true })
     declare id: number
 
-    @column()
+    @column({ columnName: 'package_id' })
     declare packageId: number
 
-    @column()
+    @column({ columnName: 'user_id' })
     declare userId: number
 
-    @column()
+    @column({ columnName: 'customer_name' })
     declare customerName: string
 
-    @column()
+    @column({ columnName: 'review_text' })
     declare reviewText: string
 
     @column()

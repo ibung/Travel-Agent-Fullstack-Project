@@ -19,7 +19,7 @@ export default class Package extends BaseModel {
     @column()
     declare price: string
 
-    @column()
+    @column({ columnName: 'transport_type' })
     declare transportType: string
 
     @column()

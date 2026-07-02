@@ -34,8 +34,21 @@ export default class TravelApisController {
 
   // ================= KELOLA PAKET =================
   async store({ request, response }: HttpContext) {
-    const data = request.only(['name', 'image', 'description', 'price'])
-    const newPackage = await Package.create(data)
+    const data = request.only([
+      'name', 'image', 'description', 'price',
+      'transport_type', 'provider', 'origin', 'destination', 'rating'
+    ])
+    const newPackage = await Package.create({
+      name: data.name,
+      image: data.image,
+      description: data.description,
+      price: data.price,
+      transportType: data.transport_type,
+      provider: data.provider,
+      origin: data.origin,
+      destination: data.destination,
+      rating: Math.max(0, Math.min(5, Number(data.rating) || 0))
+    })
     return response.created({ message: 'Paket berhasil ditambahkan', data: newPackage })
   }
 
@@ -65,7 +78,7 @@ export default class TravelApisController {
     const newReview = await Review.create({
       packageId: data.packageId,
       reviewText: data.reviewText,
-      rating: data.rating,
+      rating: Math.max(0, Math.min(5, Number(data.rating) || 0)),
       userId: user.id,
       customerName: user.fullName || 'User'
     })
@@ -82,8 +95,21 @@ export default class TravelApisController {
 
 async update({ params, request, response }: HttpContext) {
   const pkg = await Package.findOrFail(params.id)
-  const data = request.only(['name', 'image', 'description', 'price'])
-  pkg.merge(data)
+  const data = request.only([
+    'name', 'image', 'description', 'price',
+    'transport_type', 'provider', 'origin', 'destination', 'rating'
+  ])
+  pkg.merge({
+    name: data.name,
+    image: data.image,
+    description: data.description,
+    price: data.price,
+    transportType: data.transport_type,
+    provider: data.provider,
+    origin: data.origin,
+    destination: data.destination,
+    rating: Math.max(0, Math.min(5, Number(data.rating) || 0))
+  })
   await pkg.save()
 
   return response.ok({

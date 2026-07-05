@@ -156,8 +156,8 @@ const openPackageModal = (pkg) => {
       <div class="container mx-auto flex justify-between items-center px-4 py-3 md:py-4">
         <!-- Logo -->
         <NuxtLink to="/" class="flex items-center gap-3 group">
-          <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-2.5 rounded-2xl shadow-sm group-hover:scale-105 transition-transform flex items-center justify-center">
-            <UIcon name="i-heroicons-paper-airplane" class="w-6 h-6 text-white rotate-45" />
+          <div class="group-hover:scale-105 transition-transform flex items-center justify-center">
+            <img src="/logo-kong.png" alt="KONG Travel Logo" class="w-12 h-12 object-contain" />
           </div>
           <div class="flex flex-col">
             <h1 class="text-3xl text-[#13238b] tracking-tight leading-none">
@@ -609,7 +609,7 @@ const openPackageModal = (pkg) => {
       <div class="container mx-auto px-4 max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <div class="flex items-center gap-2 mb-4">
-            <UIcon name="i-heroicons-paper-airplane" class="w-5 h-5 text-blue-200 rotate-45" />
+            <img src="/logo-kong.png" alt="KONG Travel" class="w-6 h-6 object-contain brightness-0 invert" />
             <h4 class="font-bold text-white text-sm">KONG Travel Agent</h4>
           </div>
           <p class="leading-relaxed">Solusi lengkap perjalanan wisata nusantara tepercaya. Temukan penawaran terbaik dan destinasi impian Anda bersama kami.</p>

@@ -56,8 +56,11 @@ const handleLogin = async () => {
       <!-- Brand Logo -->
       <div class="flex flex-col items-center mb-8">
         <div class="flex items-center gap-2 mb-2">
-          <UIcon name="i-heroicons-paper-airplane" class="w-8 h-8 text-blue-600 rotate-45" />
-          <h1 class="text-2xl font-bold text-blue-600 font-sans">KONG Travel</h1>
+          <img src="/logo-kong.png" alt="KONG Travel Logo" class="w-10 h-10 object-contain" />
+          <h1 class="text-2xl text-[#13238b] tracking-tight leading-none font-sans">
+            <span class="font-black">KONG</span>
+            <span class="font-normal"> Travel</span>
+          </h1>
         </div>
         <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Login</p>
       </div>

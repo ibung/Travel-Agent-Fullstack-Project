@@ -139,7 +139,14 @@ const executeDelete = async () => {
 
 <template>
   <div class="flex h-screen bg-gray-50 font-sans overflow-hidden">
-    <div :class="isSidebarOpen ? 'w-64' : 'w-0'" class="transition-[width] duration-300 ease-in-out overflow-hidden flex-shrink-0 h-full">
+    <!-- Mobile Overlay -->
+    <div v-if="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"></div>
+    
+    <!-- Sidebar Container -->
+    <div :class="[
+      isSidebarOpen ? 'translate-x-0 lg:w-64' : '-translate-x-full lg:translate-x-0 lg:w-0',
+      'fixed lg:relative inset-y-0 left-0 z-50 w-64 transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0 h-full'
+    ]">
       <AdminSidebar />
     </div>
     

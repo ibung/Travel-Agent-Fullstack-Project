@@ -20,6 +20,7 @@ const userInitials = computed(() => {
 })
 
 const showLogoutPopup = ref(false)
+const isMobileMenuOpen = ref(false)
 
 const confirmLogout = () => {
   token.value = null
@@ -168,7 +169,7 @@ const openPackageModal = (pkg) => {
           </div>
         </NuxtLink>
 
-        <div class="flex items-center gap-12 lg:gap-16">
+        <div class="flex items-center gap-4 md:gap-12 lg:gap-16">
           <!-- Menu Tengah -->
           <nav class="hidden md:flex items-center gap-8">
             <NuxtLink to="#destinasi" class="text-sm text-gray-700 hover:text-blue-600 font-bold transition-all relative group py-2">
@@ -211,7 +212,22 @@ const openPackageModal = (pkg) => {
           <NuxtLink v-else to="/login" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-700 transition-colors">
             Login
           </NuxtLink>
+
+          <!-- Mobile Menu Button -->
+          <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden p-2 text-gray-700 hover:text-blue-600 focus:outline-none transition-colors">
+            <UIcon :name="isMobileMenuOpen ? 'i-heroicons-x-mark' : 'i-heroicons-bars-3'" class="w-7 h-7" />
+          </button>
         </div>
+      </div>
+
+      <!-- Mobile Menu Dropdown -->
+      <div v-show="isMobileMenuOpen" class="md:hidden bg-white/95 backdrop-blur-md border-b border-gray-100 absolute w-full left-0 top-full shadow-lg transition-all duration-300 z-40">
+        <nav class="flex flex-col p-4">
+          <NuxtLink @click="isMobileMenuOpen = false" to="#destinasi" class="text-sm font-bold text-gray-700 hover:text-blue-600 py-3 border-b border-gray-50">Destinasi</NuxtLink>
+          <NuxtLink @click="isMobileMenuOpen = false" to="#layanan" class="text-sm font-bold text-gray-700 hover:text-blue-600 py-3 border-b border-gray-50">Layanan</NuxtLink>
+          <NuxtLink @click="isMobileMenuOpen = false" to="#testimoni" class="text-sm font-bold text-gray-700 hover:text-blue-600 py-3 border-b border-gray-50">Testimoni</NuxtLink>
+          <NuxtLink @click="isMobileMenuOpen = false" to="#kontak" class="text-sm font-bold text-gray-700 hover:text-blue-600 py-3">Kontak</NuxtLink>
+        </nav>
       </div>
     </header>
 
@@ -289,13 +305,13 @@ const openPackageModal = (pkg) => {
       <!-- Controls -->
       <button 
         @click="manualPrevBanner" 
-        class="absolute left-6 top-1/2 -translate-y-1/2 text-white hover:text-blue-600 hover:scale-125 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+        class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white hover:text-blue-600 hover:scale-125 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
       >
         <UIcon name="i-heroicons-chevron-left" class="w-10 h-10 drop-shadow-md" />
       </button>
       <button 
         @click="manualNextBanner" 
-        class="absolute right-6 top-1/2 -translate-y-1/2 text-white hover:text-blue-600 hover:scale-125 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+        class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white hover:text-blue-600 hover:scale-125 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
       >
         <UIcon name="i-heroicons-chevron-right" class="w-10 h-10 drop-shadow-md" />
       </button>
@@ -346,7 +362,7 @@ const openPackageModal = (pkg) => {
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
             <div v-for="pkg in filteredPackages" :key="pkg.id" @click="openPackageModal(pkg)" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer group">
               <div class="relative h-48 w-full overflow-hidden">
                 <img :src="`/${pkg.image}`" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Destinasi">
@@ -397,7 +413,7 @@ const openPackageModal = (pkg) => {
             <p class="text-sm text-gray-500 max-w-2xl">Kami menyediakan berbagai layanan transportasi untuk menunjang perjalanan Anda, mulai dari perorangan hingga rombongan dengan pelayanan yang aman dan nyaman.</p>
           </div>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             <!-- Card 1 (Travel) -->
             <div @click="filterAndScrollTo('travel')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow group cursor-pointer">
               <div class="w-16 h-16 rounded-full overflow-hidden mb-4 shadow-sm group-hover:ring-4 group-hover:ring-blue-100 transition-all flex items-center justify-center">

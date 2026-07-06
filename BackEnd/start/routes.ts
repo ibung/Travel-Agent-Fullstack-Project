@@ -10,6 +10,7 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import TravelApisController from '../app/controllers/travel_apis_controller.js'
+import UsersController from '../app/controllers/users_controller.js'
 import { controllers } from '#generated/controllers'
 
 router.get('/', () => {
@@ -60,6 +61,12 @@ router
 
     // Manajemen review (Hanya Delete)
     router.delete('/reviews/:id', [TravelApisController, 'destroyReview'])
+
+    // Manajemen users (Full CRUD)
+    router.get('/users', [UsersController, 'index'])
+    router.post('/users', [UsersController, 'store'])
+    router.put('/users/:id', [UsersController, 'update'])
+    router.delete('/users/:id', [UsersController, 'destroy'])
 
     // Mendapatkan daftar gambar di folder public FrontEnd
     router.get('/images', [TravelApisController, 'getPublicImages'])

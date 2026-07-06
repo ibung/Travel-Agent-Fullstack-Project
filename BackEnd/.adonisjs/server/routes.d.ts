@@ -20,6 +20,10 @@ export type ScannedRoutes = {
     'travel_apis.update_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.destroy_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.destroy_review': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.index': { paramsTuple?: []; params?: {} }
+    'users.store': { paramsTuple?: []; params?: {} }
+    'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.get_public_images': { paramsTuple?: []; params?: {} }
   }
   GET: {
@@ -28,6 +32,7 @@ export type ScannedRoutes = {
     'travel_apis.reviews': { paramsTuple?: []; params?: {} }
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'travel_apis.index': { paramsTuple?: []; params?: {} }
+    'users.index': { paramsTuple?: []; params?: {} }
     'travel_apis.get_public_images': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
@@ -36,6 +41,7 @@ export type ScannedRoutes = {
     'travel_apis.reviews': { paramsTuple?: []; params?: {} }
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'travel_apis.index': { paramsTuple?: []; params?: {} }
+    'users.index': { paramsTuple?: []; params?: {} }
     'travel_apis.get_public_images': { paramsTuple?: []; params?: {} }
   }
   POST: {
@@ -45,15 +51,18 @@ export type ScannedRoutes = {
     'travel_apis.store_review': { paramsTuple?: []; params?: {} }
     'travel_apis.store': { paramsTuple?: []; params?: {} }
     'travel_apis.store_banner': { paramsTuple?: []; params?: {} }
+    'users.store': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'travel_apis.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.update_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {
     'travel_apis.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.destroy_banner': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'travel_apis.destroy_review': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

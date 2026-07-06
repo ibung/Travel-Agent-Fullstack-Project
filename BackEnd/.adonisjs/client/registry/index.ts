@@ -102,6 +102,30 @@ const routes = {
     tokens: [{"old":"/api/reviews/:id","type":0,"val":"api","end":""},{"old":"/api/reviews/:id","type":0,"val":"reviews","end":""},{"old":"/api/reviews/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['travel_apis.destroy_review']['types'],
   },
+  'users.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/users',
+    tokens: [{"old":"/api/users","type":0,"val":"api","end":""},{"old":"/api/users","type":0,"val":"users","end":""}],
+    types: placeholder as Registry['users.index']['types'],
+  },
+  'users.store': {
+    methods: ["POST"],
+    pattern: '/api/users',
+    tokens: [{"old":"/api/users","type":0,"val":"api","end":""},{"old":"/api/users","type":0,"val":"users","end":""}],
+    types: placeholder as Registry['users.store']['types'],
+  },
+  'users.update': {
+    methods: ["PUT"],
+    pattern: '/api/users/:id',
+    tokens: [{"old":"/api/users/:id","type":0,"val":"api","end":""},{"old":"/api/users/:id","type":0,"val":"users","end":""},{"old":"/api/users/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['users.update']['types'],
+  },
+  'users.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/users/:id',
+    tokens: [{"old":"/api/users/:id","type":0,"val":"api","end":""},{"old":"/api/users/:id","type":0,"val":"users","end":""},{"old":"/api/users/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['users.destroy']['types'],
+  },
   'travel_apis.get_public_images': {
     methods: ["GET","HEAD"],
     pattern: '/api/images',

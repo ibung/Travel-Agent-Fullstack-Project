@@ -199,6 +199,54 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'users.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/users'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'users.store': {
+    methods: ["POST"]
+    pattern: '/api/users'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'users.update': {
+    methods: ["PUT"]
+    pattern: '/api/users/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'users.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/users/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'travel_apis.get_public_images': {
     methods: ["GET","HEAD"]
     pattern: '/api/images'

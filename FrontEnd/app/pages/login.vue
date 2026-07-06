@@ -115,6 +115,16 @@ const handleLogin = async () => {
         </button>
       </form>
 
+      <!-- Register Link -->
+      <div class="mt-4 text-center">
+        <p class="text-xs text-gray-500">
+          Belum punya akun? 
+          <NuxtLink to="/register" class="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+            Daftar di sini
+          </NuxtLink>
+        </p>
+      </div>
+
       <!-- Back Link -->
       <div class="mt-6 text-center border-t border-gray-100 pt-6">
         <NuxtLink to="/" class="text-xs text-gray-500 hover:text-blue-600 transition-colors font-semibold flex items-center justify-center gap-1.5">

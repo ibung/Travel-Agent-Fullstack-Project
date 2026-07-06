@@ -33,4 +33,10 @@ export interface ApiDefinition {
       destroy: typeof routes['profile.access_tokens.destroy']
     }
   }
+  users: {
+    index: typeof routes['users.index']
+    store: typeof routes['users.store']
+    update: typeof routes['users.update']
+    destroy: typeof routes['users.destroy']
+  }
 }

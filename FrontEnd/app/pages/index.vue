@@ -209,9 +209,14 @@ const openPackageModal = (pkg) => {
               </button>
             </div>
           </div>
-          <NuxtLink v-else to="/login" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-700 transition-colors">
-            Login
-          </NuxtLink>
+          <div v-else class="flex items-center gap-3">
+            <NuxtLink to="/login" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-700 transition-colors">
+              Login
+            </NuxtLink>
+            <NuxtLink to="/register" class="bg-white text-blue-600 border-2 border-blue-600 px-4 py-1.5 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-50 transition-colors">
+              Sign Up
+            </NuxtLink>
+          </div>
 
           <!-- Mobile Menu Button -->
           <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden p-2 text-gray-700 hover:text-blue-600 focus:outline-none transition-colors">

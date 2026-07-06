@@ -42,6 +42,11 @@ const handleLogout = async () => {
           <UIcon name="i-heroicons-chat-bubble-left-right" class="w-5 h-5" />
           Kelola Review
         </NuxtLink>
+
+        <NuxtLink to="/admin/users" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors hover:bg-gray-800 hover:text-white" active-class="bg-blue-600 text-white hover:bg-blue-600">
+          <UIcon name="i-heroicons-users" class="w-5 h-5" />
+          Kelola Pengguna
+        </NuxtLink>
       </nav>
     </div>
 
